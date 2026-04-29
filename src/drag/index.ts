@@ -8,6 +8,7 @@ export function drag(
 ): void {
   const target = pointerEvent.target
   if (!(target instanceof HTMLElement)) return
+  const ownerDocument = target.ownerDocument
   const watcherClass = `${target.className}-watcher`
   let watcher: HTMLElement | undefined
   let intersecting = false
@@ -43,14 +44,20 @@ export function drag(
   }
 
   const stop = (event: PointerEvent): void => {
+    if (event.pointerId !== pointerEvent.pointerId) return
     void target.removeEventListener('pointermove', move)
-    void target.removeEventListener('pointerup', stop)
-    void target.removeEventListener('pointercancel', stop)
+    void ownerDocument.removeEventListener('pointerup', stop, true)
+    void ownerDocument.removeEventListener('pointercancel', stop, true)
     if (target.hasPointerCapture(event.pointerId))
       void target.releasePointerCapture(event.pointerId)
+    if (event.target !== target) {
+      target.dispatchEvent(
+        new PointerEvent(event.type, { pointerId: event.pointerId })
+      )
+    }
   }
   void target.setPointerCapture(pointerEvent.pointerId)
   void target.addEventListener('pointermove', move)
-  void target.addEventListener('pointerup', stop)
-  void target.addEventListener('pointercancel', stop)
+  void ownerDocument.addEventListener('pointerup', stop, true)
+  void ownerDocument.addEventListener('pointercancel', stop, true)
 }

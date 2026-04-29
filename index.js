@@ -7,6 +7,7 @@ function intersects(a, b) {
 function drag(pointerEvent, onIntersectingStart, onIntersectingStop) {
   const target = pointerEvent.target;
   if (!(target instanceof HTMLElement)) return;
+  const ownerDocument = target.ownerDocument;
   const watcherClass = `${target.className}-watcher`;
   let watcher;
   let intersecting = false;
@@ -37,16 +38,22 @@ function drag(pointerEvent, onIntersectingStart, onIntersectingStop) {
     intersecting = next;
   };
   const stop = (event) => {
+    if (event.pointerId !== pointerEvent.pointerId) return;
     void target.removeEventListener("pointermove", move);
-    void target.removeEventListener("pointerup", stop);
-    void target.removeEventListener("pointercancel", stop);
+    void ownerDocument.removeEventListener("pointerup", stop, true);
+    void ownerDocument.removeEventListener("pointercancel", stop, true);
     if (target.hasPointerCapture(event.pointerId))
       void target.releasePointerCapture(event.pointerId);
+    if (event.target !== target) {
+      target.dispatchEvent(
+        new PointerEvent(event.type, { pointerId: event.pointerId })
+      );
+    }
   };
   void target.setPointerCapture(pointerEvent.pointerId);
   void target.addEventListener("pointermove", move);
-  void target.addEventListener("pointerup", stop);
-  void target.addEventListener("pointercancel", stop);
+  void ownerDocument.addEventListener("pointerup", stop, true);
+  void ownerDocument.addEventListener("pointercancel", stop, true);
 }
 function startWatch(watcher, elementToWatch) {
   watcher.classList.add(`${elementToWatch.className}-watcher`);
@@ -93,7 +100,8 @@ for (let i = 0; i < 9; i++) {
       void startWatch(otherBox, box);
     }
   });
-  void box.addEventListener("pointerup", async () => {
+  const finishDrag = () => {
+    if (box.dataset.dragging !== "true") return;
     delete box.dataset.dragging;
     box.style.transform = "translate(0px, 0px)";
     delete box.dataset.x;
@@ -102,6 +110,8 @@ for (let i = 0; i < 9; i++) {
       if (otherBox === box) continue;
       void stopWatch(otherBox, box);
     }
-  });
+  };
+  void box.addEventListener("pointerup", finishDrag);
+  void box.addEventListener("pointercancel", finishDrag);
   boxes.push(box);
 }

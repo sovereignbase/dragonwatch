@@ -45,7 +45,8 @@ for (let i = 0; i < 9; i++) {
     }
   })
 
-  void box.addEventListener('pointerup', async () => {
+  const finishDrag = (): void => {
+    if (box.dataset.dragging !== 'true') return
     delete box.dataset.dragging
     box.style.transform = 'translate(0px, 0px)'
     delete box.dataset.x
@@ -54,7 +55,10 @@ for (let i = 0; i < 9; i++) {
       if (otherBox === box) continue
       void stopWatch(otherBox, box)
     }
-  })
+  }
+
+  void box.addEventListener('pointerup', finishDrag)
+  void box.addEventListener('pointercancel', finishDrag)
 
   boxes.push(box)
 }
