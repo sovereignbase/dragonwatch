@@ -60,7 +60,32 @@
 
       .controls {
         display: grid;
-        gap: 1rem;
+        grid-template-columns: repeat(3, 100px);
+        gap: 12px;
+        touch-action: none;
+      }
+
+      .controls > div {
+        display: grid;
+        place-items: center;
+        width: 100px;
+        height: 100px;
+        border: 1px solid #fff;
+        background: #000;
+        color: #fff;
+        font: 700 2rem system-ui;
+        position: relative;
+        transition: transform 0.18s ease;
+        user-select: none;
+      }
+
+      .controls > div[data-dragging='true'] {
+        z-index: 1;
+      }
+
+      .controls > div[data-dragging='true'],
+      .controls > div[data-no-transition='true'] {
+        transition: none;
       }
 
       label {

@@ -58,40 +58,50 @@ function stopWatch(watcher, elementToWatch) {
 // in-browser-testing-libs.ts
 var controls = document.querySelector("div.controls");
 if (!controls) throw new Error();
-var dragTarget = document.createElement("h1");
-dragTarget.textContent = "moi";
-dragTarget.classList.add("moi");
-void controls.appendChild(dragTarget);
-var watchers = [];
-for (let i = 0; i < 10; i++) {
-  const watcher = document.createElement("div");
-  watcher.style.cssText = `
-width: 100px;
-height: 100px;
-background: red;
-`;
-  void controls.appendChild(watcher);
-  watchers.push(watcher);
-}
-void dragTarget.addEventListener("pointerdown", async (event) => {
-  dragTarget.style.transition = `transform 0s ease`;
-  void drag(event, async (dragged, watcher) => {
-    const append = () => {
-      watcher.appendChild(dragged);
-      dragged.removeEventListener("pointerup", append);
-    };
-    dragged.addEventListener("pointerup", append);
+var boxes = [];
+for (let i = 0; i < 9; i++) {
+  const box = document.createElement("div");
+  box.textContent = `${i + 1}`;
+  box.classList.add(`box-${i}`);
+  void controls.appendChild(box);
+  void box.addEventListener("pointerdown", async (event) => {
+    box.dataset.dragging = "true";
+    void drag(event, async (dragged, watcher) => {
+      const draggedRect = dragged.getBoundingClientRect();
+      const watcherRect = watcher.getBoundingClientRect();
+      const marker = document.createTextNode("");
+      void controls.insertBefore(marker, dragged);
+      void controls.insertBefore(dragged, watcher);
+      void controls.insertBefore(watcher, marker);
+      marker.remove();
+      const nextDraggedRect = dragged.getBoundingClientRect();
+      const nextWatcherRect = watcher.getBoundingClientRect();
+      const x = Number(dragged.dataset.x ?? 0) + draggedRect.left - nextDraggedRect.left;
+      const y = Number(dragged.dataset.y ?? 0) + draggedRect.top - nextDraggedRect.top;
+      dragged.dataset.x = String(x);
+      dragged.dataset.y = String(y);
+      dragged.style.transform = `translate(${x}px, ${y}px)`;
+      watcher.dataset.noTransition = "true";
+      watcher.style.transform = `translate(${watcherRect.left - nextWatcherRect.left}px, ${watcherRect.top - nextWatcherRect.top}px)`;
+      requestAnimationFrame(() => {
+        delete watcher.dataset.noTransition;
+        watcher.style.transform = "";
+      });
+    });
+    for (const otherBox of boxes) {
+      if (otherBox === box) continue;
+      void startWatch(otherBox, box);
+    }
   });
-  for (const watcher of watchers) {
-    void startWatch(watcher, dragTarget);
-  }
-});
-void dragTarget.addEventListener("pointerup", async () => {
-  dragTarget.style.transition = `transform 0.5s ease`;
-  dragTarget.style.transform = `translate(0px, 0px)`;
-  delete dragTarget.dataset.x;
-  delete dragTarget.dataset.y;
-  for (const watcher of watchers) {
-    void stopWatch(watcher, dragTarget);
-  }
-});
+  void box.addEventListener("pointerup", async () => {
+    delete box.dataset.dragging;
+    box.style.transform = "translate(0px, 0px)";
+    delete box.dataset.x;
+    delete box.dataset.y;
+    for (const otherBox of boxes) {
+      if (otherBox === box) continue;
+      void stopWatch(otherBox, box);
+    }
+  });
+  boxes.push(box);
+}
