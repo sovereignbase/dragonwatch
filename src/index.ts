@@ -1,2 +1,2 @@
-export { startDrag } from './startDrag/index.js'
-export { createIntersectionWatcher } from './createIntersectionWatcher/index.js'
+export { drag } from './drag/index.js'
+export { startWatch, stopWatch } from './watch/index.js'
