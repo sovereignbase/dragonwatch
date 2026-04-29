@@ -1,7 +1,8 @@
 import { swapify } from './dist/index.js'
 
+const nav: HTMLElement | null = document.querySelector('nav')
 const controls: HTMLElement | null = document.querySelector('div.controls')
-if (!controls) throw new Error()
+if (!controls || !nav) throw new Error()
 
 for (let i = 0; i < 12; i++) {
   const box = document.createElement('div')
@@ -11,3 +12,4 @@ for (let i = 0; i < 12; i++) {
 }
 
 swapify(controls.children)
+swapify(nav.children)

@@ -65,7 +65,7 @@ function stopWatch(watcher, elementToWatch) {
   if (watcher.dataset.dragndropWatches === elementToWatch.dataset.dragndropId)
     delete watcher.dataset.dragndropWatches;
 }
-function swapify(elements) {
+function swapify(elements, animationDuration = 200) {
   const items = Array.from(elements).filter(
     (element) => element instanceof HTMLElement
   );
@@ -95,7 +95,7 @@ function swapify(elements) {
             },
             { transform: "none" }
           ],
-          { duration: 180, easing: "ease" }
+          { duration: animationDuration, easing: "ease" }
         );
       });
       for (const other of items) if (other !== item) startWatch(other, item);
@@ -114,11 +114,13 @@ function swapify(elements) {
 }
 
 // in-browser-testing-libs.ts
+var nav = document.querySelector("nav");
 var controls = document.querySelector("div.controls");
-if (!controls) throw new Error();
+if (!controls || !nav) throw new Error();
 for (let i = 0; i < 12; i++) {
   const box = document.createElement("div");
   box.textContent = `${i + 1}`;
   void controls.appendChild(box);
 }
 swapify(controls.children);
+swapify(nav.children);

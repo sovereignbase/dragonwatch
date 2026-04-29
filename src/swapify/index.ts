@@ -1,7 +1,10 @@
 import { drag } from '../drag/index.js'
 import { startWatch, stopWatch } from '../watch/index.js'
 
-export function swapify(elements: Iterable<Element>): void {
+export function swapify(
+  elements: Iterable<Element>,
+  animationDuration: number = 200
+): void {
   const items = Array.from(elements).filter(
     (element): element is HTMLElement => element instanceof HTMLElement
   )
@@ -25,9 +28,7 @@ export function swapify(elements: Iterable<Element>): void {
           draggedRect.left -
           nextDraggedRect.left
         const y =
-          Number(dragged.dataset.y ?? 0) +
-          draggedRect.top -
-          nextDraggedRect.top
+          Number(dragged.dataset.y ?? 0) + draggedRect.top - nextDraggedRect.top
         dragged.dataset.x = String(x)
         dragged.dataset.y = String(y)
         dragged.style.transform = `translate(${x}px, ${y}px)`
@@ -40,7 +41,7 @@ export function swapify(elements: Iterable<Element>): void {
             },
             { transform: 'none' },
           ],
-          { duration: 180, easing: 'ease' }
+          { duration: animationDuration, easing: 'ease' }
         )
       })
       for (const other of items) if (other !== item) startWatch(other, item)
