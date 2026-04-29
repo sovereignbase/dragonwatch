@@ -9,7 +9,6 @@ export function drag(
   const target = pointerEvent.target
   if (!(target instanceof HTMLElement)) return
   const ownerDocument = target.ownerDocument
-  const watcherClass = `${target.className}-watcher`
   let watcher: HTMLElement | undefined
   let intersecting = false
 
@@ -20,7 +19,8 @@ export function drag(
     )
     for (const element of elements) {
       if (element instanceof HTMLElement && element !== target) {
-        if (element.classList.contains(watcherClass)) return element
+        if (element.dataset.dragndropWatches === target.dataset.dragndropId)
+          return element
       }
     }
   }

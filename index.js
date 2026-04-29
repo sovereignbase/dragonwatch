@@ -8,7 +8,6 @@ function drag(pointerEvent, onIntersectingStart, onIntersectingStop) {
   const target = pointerEvent.target;
   if (!(target instanceof HTMLElement)) return;
   const ownerDocument = target.ownerDocument;
-  const watcherClass = `${target.className}-watcher`;
   let watcher;
   let intersecting = false;
   const closestWatcher = (event) => {
@@ -18,7 +17,8 @@ function drag(pointerEvent, onIntersectingStart, onIntersectingStop) {
     );
     for (const element of elements) {
       if (element instanceof HTMLElement && element !== target) {
-        if (element.classList.contains(watcherClass)) return element;
+        if (element.dataset.dragndropWatches === target.dataset.dragndropId)
+          return element;
       }
     }
   };
@@ -57,62 +57,68 @@ function drag(pointerEvent, onIntersectingStart, onIntersectingStop) {
   void ownerDocument.addEventListener("pointercancel", stop, true);
 }
 function startWatch(watcher, elementToWatch) {
-  watcher.classList.add(`${elementToWatch.className}-watcher`);
+  const id = elementToWatch.dataset.dragndropId ?? crypto.randomUUID();
+  elementToWatch.dataset.dragndropId = id;
+  watcher.dataset.dragndropWatches = id;
 }
 function stopWatch(watcher, elementToWatch) {
-  watcher.classList.remove(`${elementToWatch.className}-watcher`);
+  if (watcher.dataset.dragndropWatches === elementToWatch.dataset.dragndropId)
+    delete watcher.dataset.dragndropWatches;
+}
+function swapify(elements) {
+  const items = Array.from(elements).filter(
+    (element) => element instanceof HTMLElement
+  );
+  for (const item of items) {
+    item.addEventListener("pointerdown", (event) => {
+      const originalTransform = item.style.transform;
+      item.dataset.dragging = "true";
+      drag(event, (dragged, watcher) => {
+        const draggedRect = dragged.getBoundingClientRect();
+        const watcherRect = watcher.getBoundingClientRect();
+        const marker = watcher.ownerDocument.createTextNode("");
+        void watcher.parentNode?.insertBefore(marker, watcher);
+        void dragged.parentNode?.insertBefore(watcher, dragged);
+        void marker.parentNode?.insertBefore(dragged, marker);
+        marker.remove();
+        const nextDraggedRect = dragged.getBoundingClientRect();
+        const nextWatcherRect = watcher.getBoundingClientRect();
+        const x = Number(dragged.dataset.x ?? 0) + draggedRect.left - nextDraggedRect.left;
+        const y = Number(dragged.dataset.y ?? 0) + draggedRect.top - nextDraggedRect.top;
+        dragged.dataset.x = String(x);
+        dragged.dataset.y = String(y);
+        dragged.style.transform = `translate(${x}px, ${y}px)`;
+        watcher.animate(
+          [
+            {
+              transform: `translate(${watcherRect.left - nextWatcherRect.left}px, ${watcherRect.top - nextWatcherRect.top}px)`
+            },
+            { transform: "none" }
+          ],
+          { duration: 180, easing: "ease" }
+        );
+      });
+      for (const other of items) if (other !== item) startWatch(other, item);
+      const stop = () => {
+        if (item.dataset.dragging !== "true") return;
+        delete item.dataset.dragging;
+        item.style.transform = originalTransform;
+        delete item.dataset.x;
+        delete item.dataset.y;
+        for (const other of items) if (other !== item) stopWatch(other, item);
+      };
+      item.addEventListener("pointerup", stop, { once: true });
+      item.addEventListener("pointercancel", stop, { once: true });
+    });
+  }
 }
 
 // in-browser-testing-libs.ts
 var controls = document.querySelector("div.controls");
 if (!controls) throw new Error();
-var boxes = [];
 for (let i = 0; i < 12; i++) {
   const box = document.createElement("div");
   box.textContent = `${i + 1}`;
-  box.classList.add(`box-${i}`);
   void controls.appendChild(box);
-  void box.addEventListener("pointerdown", async (event) => {
-    box.dataset.dragging = "true";
-    void drag(event, async (dragged, watcher) => {
-      const draggedRect = dragged.getBoundingClientRect();
-      const watcherRect = watcher.getBoundingClientRect();
-      const marker = document.createTextNode("");
-      void controls.insertBefore(marker, dragged);
-      void controls.insertBefore(dragged, watcher);
-      void controls.insertBefore(watcher, marker);
-      marker.remove();
-      const nextDraggedRect = dragged.getBoundingClientRect();
-      const nextWatcherRect = watcher.getBoundingClientRect();
-      const x = Number(dragged.dataset.x ?? 0) + draggedRect.left - nextDraggedRect.left;
-      const y = Number(dragged.dataset.y ?? 0) + draggedRect.top - nextDraggedRect.top;
-      dragged.dataset.x = String(x);
-      dragged.dataset.y = String(y);
-      dragged.style.transform = `translate(${x}px, ${y}px)`;
-      watcher.dataset.noTransition = "true";
-      watcher.style.transform = `translate(${watcherRect.left - nextWatcherRect.left}px, ${watcherRect.top - nextWatcherRect.top}px)`;
-      requestAnimationFrame(() => {
-        delete watcher.dataset.noTransition;
-        watcher.style.transform = "";
-      });
-    });
-    for (const otherBox of boxes) {
-      if (otherBox === box) continue;
-      void startWatch(otherBox, box);
-    }
-  });
-  const finishDrag = () => {
-    if (box.dataset.dragging !== "true") return;
-    delete box.dataset.dragging;
-    box.style.transform = "translate(0px, 0px)";
-    delete box.dataset.x;
-    delete box.dataset.y;
-    for (const otherBox of boxes) {
-      if (otherBox === box) continue;
-      void stopWatch(otherBox, box);
-    }
-  };
-  void box.addEventListener("pointerup", finishDrag);
-  void box.addEventListener("pointercancel", finishDrag);
-  boxes.push(box);
 }
+swapify(controls.children);

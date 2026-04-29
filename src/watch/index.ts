@@ -2,12 +2,15 @@ export function startWatch(
   watcher: HTMLElement,
   elementToWatch: HTMLElement
 ): void {
-  watcher.classList.add(`${elementToWatch.className}-watcher`)
+  const id = elementToWatch.dataset.dragndropId ?? crypto.randomUUID()
+  elementToWatch.dataset.dragndropId = id
+  watcher.dataset.dragndropWatches = id
 }
 
 export function stopWatch(
   watcher: HTMLElement,
   elementToWatch: HTMLElement
 ): void {
-  watcher.classList.remove(`${elementToWatch.className}-watcher`)
+  if (watcher.dataset.dragndropWatches === elementToWatch.dataset.dragndropId)
+    delete watcher.dataset.dragndropWatches
 }
