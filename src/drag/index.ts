@@ -8,8 +8,25 @@ export function drag(
 ): void {
   const target = pointerEvent.target
   if (!(target instanceof HTMLElement)) return
+  const watcherClass = `${target.className}-watcher`
   let watcher: HTMLElement | undefined
   let intersecting = false
+
+  const closestWatcher = (event: PointerEvent): HTMLElement | undefined => {
+    const elements = target.ownerDocument.elementsFromPoint(
+      event.clientX,
+      event.clientY
+    )
+    for (const element of elements) {
+      let current = element
+      while (current instanceof HTMLElement) {
+        if (current !== target && current.classList.contains(watcherClass)) {
+          return current
+        }
+        current = current.parentElement as HTMLElement
+      }
+    }
+  }
 
   const move = (event: PointerEvent): void => {
     const x = Number(target.dataset.x ?? 0) + event.movementX
@@ -17,25 +34,24 @@ export function drag(
     target.dataset.x = String(x)
     target.dataset.y = String(y)
     target.style.transform = `translate(${x}px, ${y}px)`
-    const maybeWatcher = target.ownerDocument.getElementsByClassName(
-      `${target.className}-watcher`
-    )[0]
-    watcher = maybeWatcher instanceof HTMLElement ? maybeWatcher : watcher
-    if (!watcher) return
-    const next = intersects(target, watcher)
-    if (next === intersecting) return
+    const nextWatcher = closestWatcher(event)
+    const next = nextWatcher ? intersects(target, nextWatcher) : false
+    if (intersecting && (!next || nextWatcher !== watcher) && watcher)
+      void onIntersectingStop?.(target, watcher)
+
+    if (next && (!intersecting || nextWatcher !== watcher) && nextWatcher)
+      void onIntersectingStart?.(target, nextWatcher)
+
+    watcher = nextWatcher
     intersecting = next
-    const callback = next ? onIntersectingStart : onIntersectingStop
-    if (typeof callback === 'function') void callback(target, watcher)
   }
 
   const stop = (event: PointerEvent): void => {
     void target.removeEventListener('pointermove', move)
     void target.removeEventListener('pointerup', stop)
     void target.removeEventListener('pointercancel', stop)
-    if (target.hasPointerCapture(event.pointerId)) {
+    if (target.hasPointerCapture(event.pointerId))
       void target.releasePointerCapture(event.pointerId)
-    }
   }
   void target.setPointerCapture(pointerEvent.pointerId)
   void target.addEventListener('pointermove', move)
