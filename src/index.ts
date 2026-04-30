@@ -10,6 +10,7 @@ export type {
   DragTargetEventListenerFor,
   DragTargetEventMap,
   IntersectionCallback,
+  SettleEventDetail,
   SwapEventDetail,
 } from './.types/types.js'
 export { DragArea } from './DragArea/class.js'

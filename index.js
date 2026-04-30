@@ -196,6 +196,11 @@ var DragArea = class {
             transform: originalTransform,
             transition: originalTransition
           });
+          void this.eventTarget.dispatchEvent(
+            new CustomEvent("settle", {
+              detail: { thisEl: item }
+            })
+          );
           for (const other of this.members)
             if (other !== item) void stopWatch(other, item);
         };
@@ -208,10 +213,14 @@ var DragArea = class {
   members;
   eventTarget = new EventTarget();
   remoteDrag({ thisEl, x, y }) {
+    for (const animation of thisEl.getAnimations()) animation.cancel();
     void moveDraggedToOffset(thisEl, x, y);
   }
   remoteSwap({ thisEl, withEl }) {
     void swapDraggedWithWatcher(thisEl, withEl, this.animationDuration);
+  }
+  remoteSettle({ thisEl }) {
+    void returnDraggedToStart(thisEl, this.animationDuration);
   }
   getMemberById(id) {
     return this.members.find((member) => member.id === id);
@@ -300,6 +309,11 @@ var DragTarget = class {
             );
           } else {
             void returnDraggedToStart(this.dragged, this.animationDuration);
+            void this.eventTarget.dispatchEvent(
+              new CustomEvent("settle", {
+                detail: { thisEl: this.dragged }
+              })
+            );
           }
           activeTarget = void 0;
         };
@@ -324,6 +338,7 @@ var DragTarget = class {
   used = false;
   remoteDrag({ thisEl, x, y }) {
     if (this.used || thisEl !== this.dragged) return;
+    for (const animation of thisEl.getAnimations()) animation.cancel();
     void moveDraggedToOffset(thisEl, x, y);
   }
   remoteSwap({ thisEl, withEl }) {
@@ -343,6 +358,13 @@ var DragTarget = class {
       },
       this.animationDuration
     );
+  }
+  remoteSettle({ thisEl }) {
+    if (this.used || thisEl !== this.dragged) return;
+    void returnDraggedToStart(thisEl, this.animationDuration);
+  }
+  getTargetById(id) {
+    return this.targets.find((target) => target.id === id);
   }
   addEventListener(type, listener, options) {
     void this.eventTarget.addEventListener(
@@ -379,7 +401,7 @@ for (const controls of controlsArr) {
     for (const otherArea of areaArr) {
       if (otherArea === area) continue;
       const thisEl = otherArea.getMemberById(detail.thisEl.id);
-      if (!thisEl) return;
+      if (!thisEl) continue;
       otherArea.remoteDrag({ thisEl, x: detail.x, y: detail.y });
     }
   });
@@ -388,8 +410,16 @@ for (const controls of controlsArr) {
       if (otherArea === area) continue;
       const thisEl = otherArea.getMemberById(detail.thisEl.id);
       const withEl = otherArea.getMemberById(detail.withEl.id);
-      if (!thisEl || !withEl) return;
+      if (!thisEl || !withEl) continue;
       otherArea.remoteSwap({ thisEl, withEl });
+    }
+  });
+  area.addEventListener("settle", ({ detail }) => {
+    for (const otherArea of areaArr) {
+      if (otherArea === area) continue;
+      const thisEl = otherArea.getMemberById(detail.thisEl.id);
+      if (!thisEl) continue;
+      otherArea.remoteSettle({ thisEl });
     }
   });
 }

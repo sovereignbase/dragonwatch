@@ -1,5 +1,4 @@
 import { DragArea, DragTarget } from './dist/index.js'
-import type { DragEventDetail, SwapEventDetail } from './dist/index.js'
 
 const controlsArr: HTMLElement[] = Array.from(
   document.querySelectorAll('div.controls')
@@ -22,7 +21,7 @@ for (const controls of controlsArr) {
     for (const otherArea of areaArr) {
       if (otherArea === area) continue
       const thisEl = otherArea.getMemberById(detail.thisEl.id)
-      if (!thisEl) return
+      if (!thisEl) continue
       otherArea.remoteDrag({ thisEl, x: detail.x, y: detail.y })
     }
   })
@@ -31,8 +30,16 @@ for (const controls of controlsArr) {
       if (otherArea === area) continue
       const thisEl = otherArea.getMemberById(detail.thisEl.id)
       const withEl = otherArea.getMemberById(detail.withEl.id)
-      if (!thisEl || !withEl) return
+      if (!thisEl || !withEl) continue
       otherArea.remoteSwap({ thisEl, withEl })
+    }
+  })
+  area.addEventListener('settle', ({ detail }) => {
+    for (const otherArea of areaArr) {
+      if (otherArea === area) continue
+      const thisEl = otherArea.getMemberById(detail.thisEl.id)
+      if (!thisEl) continue
+      otherArea.remoteSettle({ thisEl })
     }
   })
 }

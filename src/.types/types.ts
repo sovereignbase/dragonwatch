@@ -24,8 +24,13 @@ export type SwapEventDetail = {
   withEl: HTMLElement
 }
 
+export type SettleEventDetail = {
+  thisEl: HTMLElement
+}
+
 export type DragAreaEventMap = {
   drag: DragEventDetail
+  settle: SettleEventDetail
   swap: SwapEventDetail
 }
 
@@ -42,6 +47,7 @@ export type DragTargetEventMap = {
   drag: DragEventDetail
   intersecting: SwapEventDetail
   notintersecting: SwapEventDetail
+  settle: SettleEventDetail
   swap: SwapEventDetail
 }
 

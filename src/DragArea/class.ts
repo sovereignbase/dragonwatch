@@ -64,6 +64,11 @@ export class DragArea {
             transform: originalTransform,
             transition: originalTransition,
           })
+          void this.eventTarget.dispatchEvent(
+            new CustomEvent<DragAreaEventMap['settle']>('settle', {
+              detail: { thisEl: item },
+            })
+          )
           for (const other of this.members)
             if (other !== item) void stopWatch(other, item)
         }
@@ -75,11 +80,16 @@ export class DragArea {
   }
 
   remoteDrag({ thisEl, x, y }: DragInstruction): void {
+    for (const animation of thisEl.getAnimations()) animation.cancel()
     void moveDraggedToOffset(thisEl, x, y)
   }
 
   remoteSwap({ thisEl, withEl }: SwapEventDetail): void {
     void swapDraggedWithWatcher(thisEl, withEl, this.animationDuration)
+  }
+
+  remoteSettle({ thisEl }: DragAreaEventMap['settle']): void {
+    void returnDraggedToStart(thisEl, this.animationDuration)
   }
 
   getMemberById(id: string): HTMLElement | undefined {

@@ -93,6 +93,11 @@ export class DragTarget {
             )
           } else {
             void returnDraggedToStart(this.dragged, this.animationDuration)
+            void this.eventTarget.dispatchEvent(
+              new CustomEvent<DragTargetEventMap['settle']>('settle', {
+                detail: { thisEl: this.dragged },
+              })
+            )
           }
           activeTarget = undefined
         }
@@ -112,6 +117,7 @@ export class DragTarget {
 
   remoteDrag({ thisEl, x, y }: DragInstruction): void {
     if (this.used || thisEl !== this.dragged) return
+    for (const animation of thisEl.getAnimations()) animation.cancel()
     void moveDraggedToOffset(thisEl, x, y)
   }
 
@@ -132,6 +138,11 @@ export class DragTarget {
       },
       this.animationDuration
     )
+  }
+
+  remoteSettle({ thisEl }: DragTargetEventMap['settle']): void {
+    if (this.used || thisEl !== this.dragged) return
+    void returnDraggedToStart(thisEl, this.animationDuration)
   }
 
   getTargetById(id: string): HTMLElement | undefined {
