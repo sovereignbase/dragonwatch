@@ -1,10 +1,75 @@
 // dist/index.js
+function dropDraggedOnTarget(dragged, target, commit, animationDuration) {
+  const x = Number(dragged.dataset.x ?? 0);
+  const y = Number(dragged.dataset.y ?? 0);
+  const from = dragged.getBoundingClientRect();
+  const to = target.getBoundingClientRect();
+  const next = `translate(${x + to.left - from.left}px, ${y + to.top - from.top}px)`;
+  const animation = dragged.animate(
+    [{ transform: dragged.style.transform || "none" }, { transform: next }],
+    { duration: animationDuration, easing: "ease" }
+  );
+  dragged.style.transform = next;
+  void animation.finished.finally(() => {
+    void commit();
+    delete dragged.dataset.x;
+    delete dragged.dataset.y;
+    dragged.style.transform = "";
+  });
+}
 function intersects(a, b) {
   const ar = a.getBoundingClientRect();
   const br = b.getBoundingClientRect();
   return !(ar.right < br.left || ar.left > br.right || ar.bottom < br.top || ar.top > br.bottom);
 }
-function drag(pointerEvent, onIntersectingStart, onIntersectingStop) {
+function returnDraggedToStart(dragged, animationDuration, restoredStyle) {
+  const nextTransform = restoredStyle?.transform || "none";
+  const animation = dragged.animate(
+    [
+      { transform: dragged.style.transform || "none" },
+      { transform: nextTransform }
+    ],
+    { duration: animationDuration, easing: "ease" }
+  );
+  dragged.style.transform = nextTransform;
+  delete dragged.dataset.x;
+  delete dragged.dataset.y;
+  void animation.finished.finally(() => {
+    if (!restoredStyle) {
+      dragged.style.transform = "";
+      return;
+    }
+    dragged.style.transform = restoredStyle.transform;
+    if (restoredStyle.transition !== void 0)
+      dragged.style.transition = restoredStyle.transition;
+  });
+}
+function swapDraggedWithWatcher(dragged, watcher, animationDuration) {
+  const draggedRect = dragged.getBoundingClientRect();
+  const watcherRect = watcher.getBoundingClientRect();
+  const marker = watcher.ownerDocument.createTextNode("");
+  void watcher.parentNode?.insertBefore(marker, watcher);
+  void dragged.parentNode?.insertBefore(watcher, dragged);
+  void marker.parentNode?.insertBefore(dragged, marker);
+  void marker.remove();
+  const nextDraggedRect = dragged.getBoundingClientRect();
+  const nextWatcherRect = watcher.getBoundingClientRect();
+  const x = Number(dragged.dataset.x ?? 0) + draggedRect.left - nextDraggedRect.left;
+  const y = Number(dragged.dataset.y ?? 0) + draggedRect.top - nextDraggedRect.top;
+  dragged.dataset.x = String(x);
+  dragged.dataset.y = String(y);
+  dragged.style.transform = `translate(${x}px, ${y}px)`;
+  void watcher.animate(
+    [
+      {
+        transform: `translate(${watcherRect.left - nextWatcherRect.left}px, ${watcherRect.top - nextWatcherRect.top}px)`
+      },
+      { transform: "none" }
+    ],
+    { duration: animationDuration, easing: "ease" }
+  );
+}
+function drag(pointerEvent, onIntersectingStart, onIntersectingStop, onMove) {
   const target = pointerEvent.target;
   if (!(target instanceof HTMLElement)) return;
   const ownerDocument = target.ownerDocument;
@@ -20,7 +85,7 @@ function drag(pointerEvent, onIntersectingStart, onIntersectingStop) {
     );
     for (const element of elements) {
       if (element instanceof HTMLElement && element !== target) {
-        if (element.dataset.dragndropWatches === target.dataset.dragndropId)
+        if (element.dataset.dragonWatches === target.dataset.dragonwatchId)
           return element;
       }
     }
@@ -32,6 +97,7 @@ function drag(pointerEvent, onIntersectingStart, onIntersectingStop) {
     target.dataset.x = String(x);
     target.dataset.y = String(y);
     target.style.transform = `translate(${x}px, ${y}px)`;
+    void onMove?.(target, { x, y }, event);
     const nextWatcher = closestWatcher(event);
     const next = nextWatcher ? intersects(target, nextWatcher) : false;
     if (intersecting && (!next || nextWatcher !== watcher) && watcher)
@@ -52,7 +118,7 @@ function drag(pointerEvent, onIntersectingStart, onIntersectingStop) {
     if (target.hasPointerCapture(event.pointerId))
       void target.releasePointerCapture(event.pointerId);
     if (event.target !== target) {
-      target.dispatchEvent(
+      void target.dispatchEvent(
         new PointerEvent(event.type, { pointerId: event.pointerId })
       );
     }
@@ -67,132 +133,55 @@ function drag(pointerEvent, onIntersectingStart, onIntersectingStop) {
   void ownerDocument.addEventListener("pointercancel", stop, true);
 }
 function startWatch(watcher, elementToWatch) {
-  const id = elementToWatch.dataset.dragndropId ?? crypto.randomUUID();
-  elementToWatch.dataset.dragndropId = id;
-  watcher.dataset.dragndropWatches = id;
+  const id = elementToWatch.dataset.dragonwatchId ?? crypto.randomUUID();
+  elementToWatch.dataset.dragonwatchId = id;
+  watcher.dataset.dragonWatches = id;
 }
 function stopWatch(watcher, elementToWatch) {
-  if (watcher.dataset.dragndropWatches === elementToWatch.dataset.dragndropId)
-    delete watcher.dataset.dragndropWatches;
+  if (watcher.dataset.dragonWatches === elementToWatch.dataset.dragonwatchId)
+    delete watcher.dataset.dragonWatches;
 }
-var moveTo = (dragged, target, change, animationDuration) => {
-  const x = Number(dragged.dataset.x ?? 0);
-  const y = Number(dragged.dataset.y ?? 0);
-  const from = dragged.getBoundingClientRect();
-  const to = target.getBoundingClientRect();
-  const next = `translate(${x + to.left - from.left}px, ${y + to.top - from.top}px)`;
-  const animation = dragged.animate(
-    [{ transform: dragged.style.transform || "none" }, { transform: next }],
-    { duration: animationDuration, easing: "ease" }
-  );
-  dragged.style.transform = next;
-  void animation.finished.finally(() => {
-    change();
-    delete dragged.dataset.x;
-    delete dragged.dataset.y;
-    dragged.style.transform = "";
-  });
-};
-var moveBack = (dragged, animationDuration) => {
-  const animation = dragged.animate(
-    [{ transform: dragged.style.transform || "none" }, { transform: "none" }],
-    { duration: animationDuration, easing: "ease" }
-  );
-  delete dragged.dataset.x;
-  delete dragged.dataset.y;
-  dragged.style.transform = "";
-  void animation.finished;
-};
-var targetFor = (dragged, target, change, animationDuration) => {
-  let active = false;
-  dragged.addEventListener("pointerdown", (event) => {
-    startWatch(target, dragged);
-    drag(
-      event,
-      () => {
-        active = true;
-      },
-      () => {
-        active = false;
-      }
-    );
-    const stop = () => {
-      stopWatch(target, dragged);
-      if (active) moveTo(dragged, target, change, animationDuration);
-      else moveBack(dragged, animationDuration);
-      active = false;
-    };
-    dragged.addEventListener("pointerup", stop, { once: true });
-    dragged.addEventListener("pointercancel", stop, { once: true });
-  });
-};
-var replacedDragTargetFor = (dragged, replaced, animationDuration = 200) => targetFor(
-  dragged,
-  replaced,
-  () => void replaced.replaceWith(dragged),
-  animationDuration
-);
-var appendedDragTargetFor = (dragged, parent, animationDuration = 200) => targetFor(
-  dragged,
-  parent,
-  () => void parent.appendChild(dragged),
-  animationDuration
-);
 var DragArea = class {
+  eventTarget = new EventTarget();
   constructor(elements, animationDuration = 200) {
     const items = Array.from(elements).filter(
       (element) => element instanceof HTMLElement
     );
     for (const item of items) {
-      item.addEventListener("pointerdown", (event) => {
+      void item.addEventListener("pointerdown", (event) => {
         for (const animation of item.getAnimations()) animation.cancel();
         const originalTransform = item.style.transform;
         const originalTransition = item.style.transition;
         item.dataset.dragging = "true";
         item.style.transition = "none";
-        void drag(event, (dragged, watcher) => {
-          const draggedRect = dragged.getBoundingClientRect();
-          const watcherRect = watcher.getBoundingClientRect();
-          const marker = watcher.ownerDocument.createTextNode("");
-          void watcher.parentNode?.insertBefore(marker, watcher);
-          void dragged.parentNode?.insertBefore(watcher, dragged);
-          void marker.parentNode?.insertBefore(dragged, marker);
-          marker.remove();
-          const nextDraggedRect = dragged.getBoundingClientRect();
-          const nextWatcherRect = watcher.getBoundingClientRect();
-          const x = Number(dragged.dataset.x ?? 0) + draggedRect.left - nextDraggedRect.left;
-          const y = Number(dragged.dataset.y ?? 0) + draggedRect.top - nextDraggedRect.top;
-          dragged.dataset.x = String(x);
-          dragged.dataset.y = String(y);
-          dragged.style.transform = `translate(${x}px, ${y}px)`;
-          void watcher.animate(
-            [
-              {
-                transform: `translate(${watcherRect.left - nextWatcherRect.left}px, ${watcherRect.top - nextWatcherRect.top}px)`
-              },
-              { transform: "none" }
-            ],
-            { duration: animationDuration, easing: "ease" }
-          );
-        });
+        void drag(
+          event,
+          (dragged, watcher) => {
+            void swapDraggedWithWatcher(dragged, watcher, animationDuration);
+            void this.eventTarget.dispatchEvent(
+              new CustomEvent("swap", {
+                detail: { thisEl: dragged, withEl: watcher }
+              })
+            );
+          },
+          void 0,
+          (dragged, { x, y }, pointerEvent) => {
+            void this.eventTarget.dispatchEvent(
+              new CustomEvent("drag", {
+                detail: { pointerEvent, thisEl: dragged, x, y }
+              })
+            );
+          }
+        );
         for (const other of items)
           if (other !== item) void startWatch(other, item);
         const stop = () => {
           if (item.dataset.dragging !== "true") return;
           delete item.dataset.dragging;
-          const currentTransform = item.style.transform || "none";
-          const nextTransform = originalTransform || "none";
-          const animation = item.animate(
-            [{ transform: currentTransform }, { transform: nextTransform }],
-            { duration: animationDuration, easing: "ease" }
-          );
-          item.style.transform = nextTransform;
-          void animation.finished.finally(() => {
-            item.style.transform = originalTransform;
-            item.style.transition = originalTransition;
+          void returnDraggedToStart(item, animationDuration, {
+            transform: originalTransform,
+            transition: originalTransition
           });
-          delete item.dataset.x;
-          delete item.dataset.y;
           for (const other of items)
             if (other !== item) void stopWatch(other, item);
         };
@@ -200,6 +189,97 @@ var DragArea = class {
         void item.addEventListener("pointercancel", stop, { once: true });
       });
     }
+  }
+  addEventListener(type, listener, options) {
+    void this.eventTarget.addEventListener(
+      type,
+      listener,
+      options
+    );
+  }
+  removeEventListener(type, listener, options) {
+    void this.eventTarget.removeEventListener(
+      type,
+      listener,
+      options
+    );
+  }
+};
+var DragTarget = class {
+  constructor(dragged, target, action, animationDuration = 200) {
+    this.dragged = dragged;
+    this.target = target;
+    this.action = action;
+    this.animationDuration = animationDuration;
+    void this.dragged.addEventListener("pointerdown", (event) => {
+      void this.start(event);
+    });
+  }
+  dragged;
+  target;
+  action;
+  animationDuration;
+  eventTarget = new EventTarget();
+  addEventListener(type, listener, options) {
+    void this.eventTarget.addEventListener(
+      type,
+      listener,
+      options
+    );
+  }
+  removeEventListener(type, listener, options) {
+    void this.eventTarget.removeEventListener(
+      type,
+      listener,
+      options
+    );
+  }
+  start(event) {
+    let active = false;
+    startWatch(this.target, this.dragged);
+    void drag(
+      event,
+      () => {
+        active = true;
+      },
+      () => {
+        active = false;
+      },
+      (dragged, { x, y }, pointerEvent) => {
+        this.eventTarget.dispatchEvent(
+          new CustomEvent("drag", {
+            detail: { pointerEvent, thisEl: dragged, x, y }
+          })
+        );
+      }
+    );
+    const stop = () => {
+      stopWatch(this.target, this.dragged);
+      if (active) {
+        dropDraggedOnTarget(
+          this.dragged,
+          this.target,
+          () => {
+            this.commit();
+            this.eventTarget.dispatchEvent(
+              new CustomEvent("swap", {
+                detail: { thisEl: this.dragged, withEl: this.target }
+              })
+            );
+          },
+          this.animationDuration
+        );
+      } else {
+        returnDraggedToStart(this.dragged, this.animationDuration);
+      }
+      active = false;
+    };
+    this.dragged.addEventListener("pointerup", stop, { once: true });
+    this.dragged.addEventListener("pointercancel", stop, { once: true });
+  }
+  commit() {
+    if (this.action === "replace") this.target.replaceWith(this.dragged);
+    else void this.target.appendChild(this.dragged);
   }
 };
 
@@ -212,7 +292,7 @@ for (let i = 0; i < 12; i++) {
   void controls.appendChild(box);
 }
 new DragArea(controls.children);
-var connect = (demo, template, targetFor2) => {
+var connect = (demo, template, targetFor) => {
   const row = demo.querySelector(".target-row");
   const reset = demo.querySelector("[data-reset]");
   if (!row || !reset) throw new Error();
@@ -221,13 +301,13 @@ var connect = (demo, template, targetFor2) => {
     const dragged2 = row.querySelector("[data-dragged]");
     const target2 = row.querySelector("[data-target]");
     if (!dragged2 || !target2) throw new Error();
-    targetFor2(dragged2, target2);
+    targetFor(dragged2, target2);
   };
   reset.addEventListener("click", fill);
   const dragged = row.querySelector("[data-dragged]");
   const target = row.querySelector("[data-target]");
   if (!dragged || !target) throw new Error();
-  targetFor2(dragged, target);
+  targetFor(dragged, target);
 };
 var replaceDemo = document.querySelector(
   "[data-replace-demo]"
@@ -241,5 +321,13 @@ var appendTemplate = document.querySelector(
 );
 if (!replaceDemo || !appendDemo || !replaceTemplate || !appendTemplate)
   throw new Error();
-connect(replaceDemo, replaceTemplate, replacedDragTargetFor);
-connect(appendDemo, appendTemplate, appendedDragTargetFor);
+connect(
+  replaceDemo,
+  replaceTemplate,
+  (dragged, target) => void new DragTarget(dragged, target, "replace")
+);
+connect(
+  appendDemo,
+  appendTemplate,
+  (dragged, target) => void new DragTarget(dragged, target, "append")
+);

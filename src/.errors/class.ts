@@ -1,12 +1,12 @@
-export type PackageNameErrorCode = 'EXAMPLE_ERROR_CODE'
+export type DragonwatchErrorCode = 'EXAMPLE_ERROR_CODE'
 
-export class PackageNameError extends Error {
-  readonly code: PackageNameErrorCode
+export class DragonwatchError extends Error {
+  readonly code: DragonwatchErrorCode
 
-  constructor(code: PackageNameErrorCode, message?: string) {
+  constructor(code: DragonwatchErrorCode, message?: string) {
     const detail = message ?? code
-    super(`{@z-base/package-name} ${detail}`)
+    super(`{@sovereignbase/dragonwatch} ${detail}`)
     this.code = code
-    this.name = 'PackageNameError'
+    this.name = 'DragonwatchError'
   }
 }

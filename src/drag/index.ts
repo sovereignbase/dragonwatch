@@ -1,10 +1,11 @@
 import { intersects } from '../.helpers/index.js'
-import type { IntersectionCallback } from '../.types/types.js'
+import type { DragMoveCallback, IntersectionCallback } from '../.types/types.js'
 
 export function drag(
   pointerEvent: PointerEvent,
   onIntersectingStart?: IntersectionCallback,
-  onIntersectingStop?: IntersectionCallback
+  onIntersectingStop?: IntersectionCallback,
+  onMove?: DragMoveCallback
 ): void {
   const target = pointerEvent.target
   if (!(target instanceof HTMLElement)) return
@@ -22,7 +23,7 @@ export function drag(
     )
     for (const element of elements) {
       if (element instanceof HTMLElement && element !== target) {
-        if (element.dataset.dragndropWatches === target.dataset.dragndropId)
+        if (element.dataset.dragonWatches === target.dataset.dragonwatchId)
           return element
       }
     }
@@ -35,6 +36,7 @@ export function drag(
     target.dataset.x = String(x)
     target.dataset.y = String(y)
     target.style.transform = `translate(${x}px, ${y}px)`
+    void onMove?.(target, { x, y }, event)
     const nextWatcher = closestWatcher(event)
     const next = nextWatcher ? intersects(target, nextWatcher) : false
     if (intersecting && (!next || nextWatcher !== watcher) && watcher)
@@ -58,7 +60,7 @@ export function drag(
     if (target.hasPointerCapture(event.pointerId))
       void target.releasePointerCapture(event.pointerId)
     if (event.target !== target) {
-      target.dispatchEvent(
+      void target.dispatchEvent(
         new PointerEvent(event.type, { pointerId: event.pointerId })
       )
     }

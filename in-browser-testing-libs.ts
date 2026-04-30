@@ -1,8 +1,4 @@
-import {
-  appendedDragTargetFor,
-  replacedDragTargetFor,
-  DragArea,
-} from './dist/index.js'
+import { DragArea, DragTarget } from './dist/index.js'
 
 const controls: HTMLElement | null = document.querySelector('div.controls')
 if (!controls) throw new Error()
@@ -54,5 +50,13 @@ const appendTemplate: HTMLTemplateElement | null = document.querySelector(
 if (!replaceDemo || !appendDemo || !replaceTemplate || !appendTemplate)
   throw new Error()
 
-connect(replaceDemo, replaceTemplate, replacedDragTargetFor)
-connect(appendDemo, appendTemplate, appendedDragTargetFor)
+connect(
+  replaceDemo,
+  replaceTemplate,
+  (dragged, target) => void new DragTarget(dragged, target, 'replace')
+)
+connect(
+  appendDemo,
+  appendTemplate,
+  (dragged, target) => void new DragTarget(dragged, target, 'append')
+)

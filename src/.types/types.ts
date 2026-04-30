@@ -3,56 +3,57 @@ export type IntersectionCallback = (
   watcher: HTMLElement
 ) => void
 
-////////////////////////////////////////////////////
+export type DragMoveCallback = (
+  dragged: HTMLElement,
+  offset: { x: number; y: number },
+  pointerEvent: PointerEvent
+) => void
 
-/**
- * Maps event names to their payload shapes.
- */
-export type DragAreaEventMap<T> = {
-  swap: { thisEl: HTMLElement; withEl: HTMLElement }
-  drag: HTMLCursor
+export type DragEventDetail = {
+  pointerEvent: PointerEvent
+  thisEl: HTMLElement
+  x: number
+  y: number
 }
 
-/**
- * Represents a strongly typed DragArea event listener.
- */
-export type DragAreaEventListener<T, K extends keyof DragAreaEventMap<T>> =
-  | ((event: CustomEvent<DragAreaEventMap<T>[K]>) => void)
-  | { handleEvent(event: CustomEvent<DragAreaEventMap<T>[K]>): void }
-
-/**
- * Resolves an event name to its corresponding DragArea listener type.
- */
-export type DragAreaEventListenerFor<
-  T,
-  K extends string,
-> = K extends keyof DragAreaEventMap<T>
-  ? DragAreaEventListener<T, K>
-  : EventListenerOrEventListenerObject
-
-////////////////////////////////////////////////////
-
-/**
- * Maps event names to their payload shapes.
- */
-export type DragTargetEventMap<T> = {
-  swap: { thisEl: HTMLElement; withEl: HTMLElement }
-  drag: HTMLCursor
+export type SwapEventDetail = {
+  thisEl: HTMLElement
+  withEl: HTMLElement
 }
 
-/**
- * Represents a strongly typed DragTarget event listener.
- */
-export type DragTargetEventListener<T, K extends keyof DragTargetEventMap<T>> =
-  | ((event: CustomEvent<DragTargetEventMap<T>[K]>) => void)
-  | { handleEvent(event: CustomEvent<DragTargetEventMap<T>[K]>): void }
+export type DragAreaEventMap = {
+  drag: DragEventDetail
+  swap: SwapEventDetail
+}
 
-/**
- * Resolves an event name to its corresponding DragTarget listener type.
- */
-export type DragTargetEventListenerFor<
-  T,
-  K extends string,
-> = K extends keyof DragTargetEventMap<T>
-  ? DragTargetEventListener<T, K>
-  : EventListenerOrEventListenerObject
+export type DragAreaEventListener<K extends keyof DragAreaEventMap> =
+  | ((event: CustomEvent<DragAreaEventMap[K]>) => void)
+  | { handleEvent(event: CustomEvent<DragAreaEventMap[K]>): void }
+
+export type DragAreaEventListenerFor<K extends string> =
+  K extends keyof DragAreaEventMap
+    ? DragAreaEventListener<K>
+    : EventListenerOrEventListenerObject
+
+export type DragTargetAction = 'append' | 'replace'
+
+export type DragTargetEventMap = {
+  drag: DragEventDetail
+  swap: SwapEventDetail
+}
+
+export type DragTargetEventListener<K extends keyof DragTargetEventMap> =
+  | ((event: CustomEvent<DragTargetEventMap[K]>) => void)
+  | { handleEvent(event: CustomEvent<DragTargetEventMap[K]>): void }
+
+export type DragTargetEventListenerFor<K extends string> =
+  K extends keyof DragTargetEventMap
+    ? DragTargetEventListener<K>
+    : EventListenerOrEventListenerObject
+
+export type DropCommit = () => void
+
+export type RestoredDragStyle = {
+  transform: string
+  transition?: string
+}
