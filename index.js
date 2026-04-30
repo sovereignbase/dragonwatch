@@ -352,14 +352,32 @@ var DragTarget = class {
 };
 
 // in-browser-testing-libs.ts
-var controls = document.querySelector("div.controls");
-if (!controls) throw new Error();
-for (let i = 0; i < 12; i++) {
-  const box = document.createElement("div");
-  box.textContent = `${i + 1}`;
-  void controls.appendChild(box);
+var controlsArr = Array.from(
+  document.querySelectorAll("div.controls")
+);
+var areaArr = [];
+for (const controls of controlsArr) {
+  if (!controls) throw new Error();
+  for (let i = 0; i < 9; i++) {
+    const box = document.createElement("div");
+    box.textContent = `${i + 1}`;
+    void controls.appendChild(box);
+  }
+  const area = new DragArea(controls.children);
+  areaArr.push(area);
+  area.addEventListener("drag", ({ detail }) => {
+    for (const otherArea of areaArr) {
+      if (otherArea === area) continue;
+      otherArea.remoteDrag(detail);
+    }
+  });
+  area.addEventListener("swap", ({ detail }) => {
+    for (const otherArea of areaArr) {
+      if (otherArea === area) continue;
+      otherArea.remoteSwap(detail);
+    }
+  });
 }
-new DragArea(controls.children);
 var connect = (demo, template, targetFor) => {
   const row = demo.querySelector(".target-row");
   const reset = demo.querySelector("[data-reset]");

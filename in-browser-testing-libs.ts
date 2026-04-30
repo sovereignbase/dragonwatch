@@ -1,17 +1,36 @@
 import { DragArea, DragTarget } from './dist/index.js'
 
-const controls: HTMLElement | null = document.querySelector('div.controls')
-if (!controls) throw new Error()
+const controlsArr: HTMLElement[] = Array.from(
+  document.querySelectorAll('div.controls')
+)
 
-for (let i = 0; i < 12; i++) {
-  const box = document.createElement('div')
+const areaArr: DragArea[] = []
 
-  box.textContent = `${i + 1}`
-  void controls.appendChild(box)
+for (const controls of controlsArr) {
+  if (!controls) throw new Error()
+  for (let i = 0; i < 9; i++) {
+    const box = document.createElement('div')
+    box.id = `box:${i + 1}`
+    box.textContent = `${i + 1}`
+    void controls.appendChild(box)
+  }
+
+  const area = new DragArea(controls.children)
+  areaArr.push(area)
+  area.addEventListener('drag', ({ detail }) => {
+    for (const otherArea of areaArr) {
+      if (otherArea === area) continue
+      otherArea.remoteDrag(detail)
+    }
+  })
+  area.addEventListener('swap', ({ detail }) => {
+    for (const otherArea of areaArr) {
+      if (otherArea === area) continue
+      otherArea.remoteSwap(detail)
+    }
+  })
 }
-
-new DragArea(controls.children)
-
+/////////
 const connect = (
   demo: HTMLElement,
   template: HTMLTemplateElement,
