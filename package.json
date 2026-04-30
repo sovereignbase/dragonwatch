@@ -3,10 +3,17 @@
   "license": "Apache-2.0",
   "name": "@sovereignbase/dragonwatch",
   "version": "0.0.0",
-  "description": "",
+  "description": "Small browser primitives for pointer-driven dragging and element watching.",
   "keywords": [
+    "sovereignbase",
+    "dragonwatch",
+    "drag-and-drop",
+    "drag",
+    "pointer-events",
+    "typed-events",
+    "remote-replay",
     "typescript",
-    "sovereignbase"
+    "browser"
   ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
