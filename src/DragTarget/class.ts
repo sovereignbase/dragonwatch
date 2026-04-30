@@ -14,42 +14,47 @@ import { drag } from '../drag/index.js'
 import { startWatch, stopWatch } from '../watch/index.js'
 
 export class DragTarget {
+  public readonly targets: readonly HTMLElement[]
+
   private readonly abortController = new AbortController()
   private readonly eventTarget = new EventTarget()
   private used = false
 
   constructor(
-    private readonly dragged: HTMLElement,
-    private readonly target: HTMLElement,
+    public readonly dragged: HTMLElement,
+    targets: HTMLElement | Iterable<HTMLElement>,
     private readonly action: DragTargetAction,
     private readonly animationDuration: number = 200
   ) {
+    this.targets =
+      targets instanceof HTMLElement ? [targets] : Array.from(targets)
+
     void this.dragged.addEventListener(
       'pointerdown',
       (event) => {
         if (this.used) return
-        let active = false
-        void startWatch(this.target, this.dragged)
+        let activeTarget: HTMLElement | undefined
+        for (const target of this.targets) void startWatch(target, this.dragged)
         void drag(
           event,
-          () => {
-            active = true
+          (_dragged, target) => {
+            activeTarget = target
             void this.eventTarget.dispatchEvent(
               new CustomEvent<DragTargetEventMap['intersecting']>(
                 'intersecting',
                 {
-                  detail: { thisEl: this.dragged, withEl: this.target },
+                  detail: { thisEl: this.dragged, withEl: target },
                 }
               )
             )
           },
-          () => {
-            active = false
+          (_dragged, target) => {
+            if (activeTarget === target) activeTarget = undefined
             void this.eventTarget.dispatchEvent(
               new CustomEvent<DragTargetEventMap['notintersecting']>(
                 'notintersecting',
                 {
-                  detail: { thisEl: this.dragged, withEl: this.target },
+                  detail: { thisEl: this.dragged, withEl: target },
                 }
               )
             )
@@ -65,20 +70,22 @@ export class DragTarget {
 
         const stop = (): void => {
           if (this.used) return
-          void stopWatch(this.target, this.dragged)
-          if (active) {
+          for (const target of this.targets)
+            void stopWatch(target, this.dragged)
+          const target = activeTarget
+          if (target) {
             this.used = true
             void this.abortController.abort()
             void dropDraggedOnTarget(
               this.dragged,
-              this.target,
+              target,
               () => {
                 if (this.action === 'replace')
-                  void this.target.replaceWith(this.dragged)
-                else void this.target.appendChild(this.dragged)
+                  void target.replaceWith(this.dragged)
+                else void target.appendChild(this.dragged)
                 void this.eventTarget.dispatchEvent(
                   new CustomEvent<DragTargetEventMap['swap']>('swap', {
-                    detail: { thisEl: this.dragged, withEl: this.target },
+                    detail: { thisEl: this.dragged, withEl: target },
                   })
                 )
               },
@@ -87,7 +94,7 @@ export class DragTarget {
           } else {
             void returnDraggedToStart(this.dragged, this.animationDuration)
           }
-          active = false
+          activeTarget = undefined
         }
 
         void this.dragged.addEventListener('pointerup', stop, {
@@ -104,21 +111,24 @@ export class DragTarget {
   }
 
   remoteDrag({ thisEl, x, y }: DragInstruction): void {
-    if (this.used) return
+    if (this.used || thisEl !== this.dragged) return
     void moveDraggedToOffset(thisEl, x, y)
   }
 
   remoteSwap({ thisEl, withEl }: SwapEventDetail): void {
-    if (this.used) return
+    if (this.used || thisEl !== this.dragged) return
+    const target = this.targets.find((target) => target === withEl)
+    if (!target) return
     this.used = true
-    void stopWatch(this.target, this.dragged)
+    for (const watchedTarget of this.targets)
+      void stopWatch(watchedTarget, this.dragged)
     void this.abortController.abort()
     void dropDraggedOnTarget(
       thisEl,
-      withEl,
+      target,
       () => {
-        if (this.action === 'replace') void withEl.replaceWith(thisEl)
-        else void withEl.appendChild(thisEl)
+        if (this.action === 'replace') void target.replaceWith(thisEl)
+        else void target.appendChild(thisEl)
       },
       this.animationDuration
     )

@@ -1,4 +1,5 @@
 import { DragArea, DragTarget } from './dist/index.js'
+import type { DragEventDetail, SwapEventDetail } from './dist/index.js'
 
 const controlsArr: HTMLElement[] = Array.from(
   document.querySelectorAll('div.controls')
@@ -20,13 +21,18 @@ for (const controls of controlsArr) {
   area.addEventListener('drag', ({ detail }) => {
     for (const otherArea of areaArr) {
       if (otherArea === area) continue
-      otherArea.remoteDrag(detail)
+      const thisEl = area.getMemberById(detail.thisEl.id)
+      if (!thisEl) return
+      area.remoteDrag({ thisEl, x: detail.x, y: detail.y })
     }
   })
   area.addEventListener('swap', ({ detail }) => {
     for (const otherArea of areaArr) {
       if (otherArea === area) continue
-      otherArea.remoteSwap(detail)
+      const thisEl = area.getMemberById(detail.thisEl.id)
+      const withEl = area.getMemberById(detail.withEl.id)
+      if (!thisEl || !withEl) return
+      area.remoteSwap({ thisEl, withEl })
     }
   })
 }
@@ -34,7 +40,10 @@ for (const controls of controlsArr) {
 const connect = (
   demo: HTMLElement,
   template: HTMLTemplateElement,
-  targetFor: (dragged: HTMLElement, target: HTMLElement) => DragTarget
+  targetFor: (
+    dragged: HTMLElement,
+    targets: readonly HTMLElement[]
+  ) => DragTarget
 ): void => {
   const row: HTMLElement | null = demo.querySelector('.target-row')
   const reset: HTMLButtonElement | null = demo.querySelector('[data-reset]')
@@ -43,27 +52,31 @@ const connect = (
   const fill = (): void => {
     row.replaceChildren(template.content.cloneNode(true))
     const dragged: HTMLElement | null = row.querySelector('[data-dragged]')
-    const target: HTMLElement | null = row.querySelector('[data-target]')
-    if (!dragged || !target) throw new Error()
-    watchTarget(targetFor(dragged, target), target)
+    const targets = Array.from(row.querySelectorAll('[data-target]')).filter(
+      (element): element is HTMLElement => element instanceof HTMLElement
+    )
+    if (!dragged || targets.length === 0) throw new Error()
+    watchTarget(targetFor(dragged, targets))
   }
 
   reset.addEventListener('click', fill)
   const dragged: HTMLElement | null = row.querySelector('[data-dragged]')
-  const target: HTMLElement | null = row.querySelector('[data-target]')
-  if (!dragged || !target) throw new Error()
-  watchTarget(targetFor(dragged, target), target)
+  const targets = Array.from(row.querySelectorAll('[data-target]')).filter(
+    (element): element is HTMLElement => element instanceof HTMLElement
+  )
+  if (!dragged || targets.length === 0) throw new Error()
+  watchTarget(targetFor(dragged, targets))
 }
 
-const watchTarget = (dragTarget: DragTarget, target: HTMLElement): void => {
-  dragTarget.addEventListener('intersecting', () => {
-    target.dataset.intersecting = 'true'
+const watchTarget = (dragTarget: DragTarget): void => {
+  dragTarget.addEventListener('intersecting', ({ detail }) => {
+    detail.withEl.dataset.intersecting = 'true'
   })
-  dragTarget.addEventListener('notintersecting', () => {
-    delete target.dataset.intersecting
+  dragTarget.addEventListener('notintersecting', ({ detail }) => {
+    delete detail.withEl.dataset.intersecting
   })
-  dragTarget.addEventListener('swap', () => {
-    delete target.dataset.intersecting
+  dragTarget.addEventListener('swap', ({ detail }) => {
+    delete detail.withEl.dataset.intersecting
   })
 }
 

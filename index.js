@@ -154,10 +154,10 @@ function stopWatch(watcher, elementToWatch) {
 var DragArea = class {
   constructor(elements, animationDuration = 200) {
     this.animationDuration = animationDuration;
-    const items = Array.from(elements).filter(
+    this.members = Array.from(elements).filter(
       (element) => element instanceof HTMLElement
     );
-    for (const item of items) {
+    for (const item of this.members) {
       void item.addEventListener("pointerdown", (event) => {
         for (const animation of item.getAnimations()) animation.cancel();
         const originalTransform = item.style.transform;
@@ -187,7 +187,7 @@ var DragArea = class {
             );
           }
         );
-        for (const other of items)
+        for (const other of this.members)
           if (other !== item) void startWatch(other, item);
         const stop = () => {
           if (item.dataset.dragging !== "true") return;
@@ -196,7 +196,7 @@ var DragArea = class {
             transform: originalTransform,
             transition: originalTransition
           });
-          for (const other of items)
+          for (const other of this.members)
             if (other !== item) void stopWatch(other, item);
         };
         void item.addEventListener("pointerup", stop, { once: true });
@@ -205,12 +205,16 @@ var DragArea = class {
     }
   }
   animationDuration;
+  members;
   eventTarget = new EventTarget();
   remoteDrag({ thisEl, x, y }) {
     void moveDraggedToOffset(thisEl, x, y);
   }
   remoteSwap({ thisEl, withEl }) {
     void swapDraggedWithWatcher(thisEl, withEl, this.animationDuration);
+  }
+  getMemberById(id) {
+    return this.members.find((member) => member.id === id);
   }
   addEventListener(type, listener, options) {
     void this.eventTarget.addEventListener(
@@ -228,37 +232,37 @@ var DragArea = class {
   }
 };
 var DragTarget = class {
-  constructor(dragged, target, action, animationDuration = 200) {
+  constructor(dragged, targets, action, animationDuration = 200) {
     this.dragged = dragged;
-    this.target = target;
     this.action = action;
     this.animationDuration = animationDuration;
+    this.targets = targets instanceof HTMLElement ? [targets] : Array.from(targets);
     void this.dragged.addEventListener(
       "pointerdown",
       (event) => {
         if (this.used) return;
-        let active = false;
-        void startWatch(this.target, this.dragged);
+        let activeTarget;
+        for (const target of this.targets) void startWatch(target, this.dragged);
         void drag(
           event,
-          () => {
-            active = true;
+          (_dragged, target) => {
+            activeTarget = target;
             void this.eventTarget.dispatchEvent(
               new CustomEvent(
                 "intersecting",
                 {
-                  detail: { thisEl: this.dragged, withEl: this.target }
+                  detail: { thisEl: this.dragged, withEl: target }
                 }
               )
             );
           },
-          () => {
-            active = false;
+          (_dragged, target) => {
+            if (activeTarget === target) activeTarget = void 0;
             void this.eventTarget.dispatchEvent(
               new CustomEvent(
                 "notintersecting",
                 {
-                  detail: { thisEl: this.dragged, withEl: this.target }
+                  detail: { thisEl: this.dragged, withEl: target }
                 }
               )
             );
@@ -273,20 +277,22 @@ var DragTarget = class {
         );
         const stop = () => {
           if (this.used) return;
-          void stopWatch(this.target, this.dragged);
-          if (active) {
+          for (const target2 of this.targets)
+            void stopWatch(target2, this.dragged);
+          const target = activeTarget;
+          if (target) {
             this.used = true;
             void this.abortController.abort();
             void dropDraggedOnTarget(
               this.dragged,
-              this.target,
+              target,
               () => {
                 if (this.action === "replace")
-                  void this.target.replaceWith(this.dragged);
-                else void this.target.appendChild(this.dragged);
+                  void target.replaceWith(this.dragged);
+                else void target.appendChild(this.dragged);
                 void this.eventTarget.dispatchEvent(
                   new CustomEvent("swap", {
-                    detail: { thisEl: this.dragged, withEl: this.target }
+                    detail: { thisEl: this.dragged, withEl: target }
                   })
                 );
               },
@@ -295,7 +301,7 @@ var DragTarget = class {
           } else {
             void returnDraggedToStart(this.dragged, this.animationDuration);
           }
-          active = false;
+          activeTarget = void 0;
         };
         void this.dragged.addEventListener("pointerup", stop, {
           once: true,
@@ -310,27 +316,30 @@ var DragTarget = class {
     );
   }
   dragged;
-  target;
   action;
   animationDuration;
+  targets;
   abortController = new AbortController();
   eventTarget = new EventTarget();
   used = false;
   remoteDrag({ thisEl, x, y }) {
-    if (this.used) return;
+    if (this.used || thisEl !== this.dragged) return;
     void moveDraggedToOffset(thisEl, x, y);
   }
   remoteSwap({ thisEl, withEl }) {
-    if (this.used) return;
+    if (this.used || thisEl !== this.dragged) return;
+    const target = this.targets.find((target2) => target2 === withEl);
+    if (!target) return;
     this.used = true;
-    void stopWatch(this.target, this.dragged);
+    for (const watchedTarget of this.targets)
+      void stopWatch(watchedTarget, this.dragged);
     void this.abortController.abort();
     void dropDraggedOnTarget(
       thisEl,
-      withEl,
+      target,
       () => {
-        if (this.action === "replace") void withEl.replaceWith(thisEl);
-        else void withEl.appendChild(thisEl);
+        if (this.action === "replace") void target.replaceWith(thisEl);
+        else void target.appendChild(thisEl);
       },
       this.animationDuration
     );
@@ -360,6 +369,7 @@ for (const controls of controlsArr) {
   if (!controls) throw new Error();
   for (let i = 0; i < 9; i++) {
     const box = document.createElement("div");
+    box.id = `box:${i + 1}`;
     box.textContent = `${i + 1}`;
     void controls.appendChild(box);
   }
@@ -368,13 +378,18 @@ for (const controls of controlsArr) {
   area.addEventListener("drag", ({ detail }) => {
     for (const otherArea of areaArr) {
       if (otherArea === area) continue;
-      otherArea.remoteDrag(detail);
+      const thisEl = area.getMemberById(detail.thisEl.id);
+      if (!thisEl) return;
+      area.remoteDrag({ thisEl, x: detail.x, y: detail.y });
     }
   });
   area.addEventListener("swap", ({ detail }) => {
     for (const otherArea of areaArr) {
       if (otherArea === area) continue;
-      otherArea.remoteSwap(detail);
+      const thisEl = area.getMemberById(detail.thisEl.id);
+      const withEl = area.getMemberById(detail.withEl.id);
+      if (!thisEl || !withEl) return;
+      area.remoteSwap({ thisEl, withEl });
     }
   });
 }
@@ -385,25 +400,29 @@ var connect = (demo, template, targetFor) => {
   const fill = () => {
     row.replaceChildren(template.content.cloneNode(true));
     const dragged2 = row.querySelector("[data-dragged]");
-    const target2 = row.querySelector("[data-target]");
-    if (!dragged2 || !target2) throw new Error();
-    watchTarget(targetFor(dragged2, target2), target2);
+    const targets2 = Array.from(row.querySelectorAll("[data-target]")).filter(
+      (element) => element instanceof HTMLElement
+    );
+    if (!dragged2 || targets2.length === 0) throw new Error();
+    watchTarget(targetFor(dragged2, targets2));
   };
   reset.addEventListener("click", fill);
   const dragged = row.querySelector("[data-dragged]");
-  const target = row.querySelector("[data-target]");
-  if (!dragged || !target) throw new Error();
-  watchTarget(targetFor(dragged, target), target);
+  const targets = Array.from(row.querySelectorAll("[data-target]")).filter(
+    (element) => element instanceof HTMLElement
+  );
+  if (!dragged || targets.length === 0) throw new Error();
+  watchTarget(targetFor(dragged, targets));
 };
-var watchTarget = (dragTarget, target) => {
-  dragTarget.addEventListener("intersecting", () => {
-    target.dataset.intersecting = "true";
+var watchTarget = (dragTarget) => {
+  dragTarget.addEventListener("intersecting", ({ detail }) => {
+    detail.withEl.dataset.intersecting = "true";
   });
-  dragTarget.addEventListener("notintersecting", () => {
-    delete target.dataset.intersecting;
+  dragTarget.addEventListener("notintersecting", ({ detail }) => {
+    delete detail.withEl.dataset.intersecting;
   });
-  dragTarget.addEventListener("swap", () => {
-    delete target.dataset.intersecting;
+  dragTarget.addEventListener("swap", ({ detail }) => {
+    delete detail.withEl.dataset.intersecting;
   });
 };
 var replaceDemo = document.querySelector(

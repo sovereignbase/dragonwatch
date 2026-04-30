@@ -33,10 +33,8 @@ export type DragAreaEventListener<K extends keyof DragAreaEventMap> =
   | ((event: CustomEvent<DragAreaEventMap[K]>) => void)
   | { handleEvent(event: CustomEvent<DragAreaEventMap[K]>): void }
 
-export type DragAreaEventListenerFor<K extends string> =
-  K extends keyof DragAreaEventMap
-    ? DragAreaEventListener<K>
-    : EventListenerOrEventListenerObject
+export type DragAreaEventListenerFor<K extends keyof DragAreaEventMap> =
+  DragAreaEventListener<K>
 
 export type DragTargetAction = 'append' | 'replace'
 
@@ -51,10 +49,8 @@ export type DragTargetEventListener<K extends keyof DragTargetEventMap> =
   | ((event: CustomEvent<DragTargetEventMap[K]>) => void)
   | { handleEvent(event: CustomEvent<DragTargetEventMap[K]>): void }
 
-export type DragTargetEventListenerFor<K extends string> =
-  K extends keyof DragTargetEventMap
-    ? DragTargetEventListener<K>
-    : EventListenerOrEventListenerObject
+export type DragTargetEventListenerFor<K extends keyof DragTargetEventMap> =
+  DragTargetEventListener<K>
 
 export type DropCommit = () => void
 

@@ -13,17 +13,18 @@ import { drag } from '../drag/index.js'
 import { startWatch, stopWatch } from '../watch/index.js'
 
 export class DragArea {
+  public readonly members: readonly HTMLElement[]
   private readonly eventTarget = new EventTarget()
 
   constructor(
     elements: Iterable<Element>,
     private readonly animationDuration: number = 200
   ) {
-    const items = Array.from(elements).filter(
+    this.members = Array.from(elements).filter(
       (element): element is HTMLElement => element instanceof HTMLElement
     )
 
-    for (const item of items) {
+    for (const item of this.members) {
       void item.addEventListener('pointerdown', (event) => {
         for (const animation of item.getAnimations()) animation.cancel()
         const originalTransform = item.style.transform
@@ -53,7 +54,7 @@ export class DragArea {
             )
           }
         )
-        for (const other of items)
+        for (const other of this.members)
           if (other !== item) void startWatch(other, item)
 
         const stop = (): void => {
@@ -63,7 +64,7 @@ export class DragArea {
             transform: originalTransform,
             transition: originalTransition,
           })
-          for (const other of items)
+          for (const other of this.members)
             if (other !== item) void stopWatch(other, item)
         }
 
@@ -79,6 +80,10 @@ export class DragArea {
 
   remoteSwap({ thisEl, withEl }: SwapEventDetail): void {
     void swapDraggedWithWatcher(thisEl, withEl, this.animationDuration)
+  }
+
+  getMemberById(id: string): HTMLElement | undefined {
+    return this.members.find((member) => member.id === id)
   }
 
   addEventListener<K extends keyof DragAreaEventMap>(
