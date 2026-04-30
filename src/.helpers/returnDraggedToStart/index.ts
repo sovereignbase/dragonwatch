@@ -1,4 +1,5 @@
 import type { RestoredDragStyle } from '../../.types/types.js'
+import { restoreDraggedStyle } from '../restoreDraggedStyle/index.js'
 
 export function returnDraggedToStart(
   dragged: HTMLElement,
@@ -21,8 +22,6 @@ export function returnDraggedToStart(
       dragged.style.transform = ''
       return
     }
-    dragged.style.transform = restoredStyle.transform
-    if (restoredStyle.transition !== undefined)
-      dragged.style.transition = restoredStyle.transition
+    void restoreDraggedStyle(dragged, restoredStyle)
   })
 }

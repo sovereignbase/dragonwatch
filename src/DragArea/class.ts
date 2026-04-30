@@ -1,5 +1,6 @@
 import {
   moveDraggedToOffset,
+  raiseDragged,
   returnDraggedToStart,
   swapDraggedWithWatcher,
 } from '../.helpers/index.js'
@@ -7,6 +8,7 @@ import type {
   DragAreaEventListenerFor,
   DragAreaEventMap,
   DragInstruction,
+  RestoredDragStyle,
   SwapEventDetail,
 } from '../.types/types.js'
 import { drag } from '../drag/index.js'
@@ -15,6 +17,7 @@ import { startWatch, stopWatch } from '../watch/index.js'
 export class DragArea {
   public readonly members: readonly HTMLElement[]
   private readonly eventTarget = new EventTarget()
+  private readonly restoredStyles = new Map<HTMLElement, RestoredDragStyle>()
 
   constructor(
     elements: Iterable<Element>,
@@ -26,9 +29,8 @@ export class DragArea {
 
     for (const item of this.members) {
       void item.addEventListener('pointerdown', (event) => {
+        const restoredStyle = raiseDragged(item)
         for (const animation of item.getAnimations()) animation.cancel()
-        const originalTransform = item.style.transform
-        const originalTransition = item.style.transition
         item.dataset.dragging = 'true'
         item.style.transition = 'none'
         void drag(
@@ -60,10 +62,7 @@ export class DragArea {
         const stop = (): void => {
           if (item.dataset.dragging !== 'true') return
           delete item.dataset.dragging
-          void returnDraggedToStart(item, this.animationDuration, {
-            transform: originalTransform,
-            transition: originalTransition,
-          })
+          void returnDraggedToStart(item, this.animationDuration, restoredStyle)
           void this.eventTarget.dispatchEvent(
             new CustomEvent<DragAreaEventMap['settle']>('settle', {
               detail: { thisEl: item },
@@ -81,6 +80,10 @@ export class DragArea {
 
   remoteDrag({ thisEl, x, y }: DragInstruction): void {
     for (const animation of thisEl.getAnimations()) animation.cancel()
+    if (!this.restoredStyles.has(thisEl)) {
+      void this.restoredStyles.set(thisEl, raiseDragged(thisEl))
+      thisEl.style.transition = 'none'
+    }
     void moveDraggedToOffset(thisEl, x, y)
   }
 
@@ -89,7 +92,9 @@ export class DragArea {
   }
 
   remoteSettle({ thisEl }: DragAreaEventMap['settle']): void {
-    void returnDraggedToStart(thisEl, this.animationDuration)
+    const restoredStyle = this.restoredStyles.get(thisEl)
+    void this.restoredStyles.delete(thisEl)
+    void returnDraggedToStart(thisEl, this.animationDuration, restoredStyle)
   }
 
   getMemberById(id: string): HTMLElement | undefined {

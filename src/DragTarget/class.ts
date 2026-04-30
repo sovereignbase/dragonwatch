@@ -1,6 +1,7 @@
 import {
   dropDraggedOnTarget,
   moveDraggedToOffset,
+  raiseDragged,
   returnDraggedToStart,
 } from '../.helpers/index.js'
 import type {
@@ -8,6 +9,7 @@ import type {
   DragTargetAction,
   DragTargetEventListenerFor,
   DragTargetEventMap,
+  RestoredDragStyle,
   SwapEventDetail,
 } from '../.types/types.js'
 import { drag } from '../drag/index.js'
@@ -18,6 +20,7 @@ export class DragTarget {
 
   private readonly abortController = new AbortController()
   private readonly eventTarget = new EventTarget()
+  private readonly restoredStyles = new Map<HTMLElement, RestoredDragStyle>()
   private used = false
 
   constructor(
@@ -118,6 +121,10 @@ export class DragTarget {
   remoteDrag({ thisEl, x, y }: DragInstruction): void {
     if (this.used || thisEl !== this.dragged) return
     for (const animation of thisEl.getAnimations()) animation.cancel()
+    if (!this.restoredStyles.has(thisEl)) {
+      void this.restoredStyles.set(thisEl, raiseDragged(thisEl))
+      thisEl.style.transition = 'none'
+    }
     void moveDraggedToOffset(thisEl, x, y)
   }
 
@@ -126,6 +133,8 @@ export class DragTarget {
     const target = this.targets.find((target) => target === withEl)
     if (!target) return
     this.used = true
+    const restoredStyle = this.restoredStyles.get(thisEl)
+    void this.restoredStyles.delete(thisEl)
     for (const watchedTarget of this.targets)
       void stopWatch(watchedTarget, this.dragged)
     void this.abortController.abort()
@@ -136,13 +145,16 @@ export class DragTarget {
         if (this.action === 'replace') void target.replaceWith(thisEl)
         else void target.appendChild(thisEl)
       },
-      this.animationDuration
+      this.animationDuration,
+      restoredStyle
     )
   }
 
   remoteSettle({ thisEl }: DragTargetEventMap['settle']): void {
     if (this.used || thisEl !== this.dragged) return
-    void returnDraggedToStart(thisEl, this.animationDuration)
+    const restoredStyle = this.restoredStyles.get(thisEl)
+    void this.restoredStyles.delete(thisEl)
+    void returnDraggedToStart(thisEl, this.animationDuration, restoredStyle)
   }
 
   getTargetById(id: string): HTMLElement | undefined {

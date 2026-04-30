@@ -61,6 +61,8 @@ export type DragTargetEventListenerFor<K extends keyof DragTargetEventMap> =
 export type DropCommit = () => void
 
 export type RestoredDragStyle = {
+  position: string
   transform: string
-  transition?: string
+  transition: string
+  zIndex: string
 }

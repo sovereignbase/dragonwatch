@@ -1,5 +1,7 @@
 export { dropDraggedOnTarget } from './dropDraggedOnTarget/index.js'
 export { intersects } from './intersects/index.js'
 export { moveDraggedToOffset } from './moveDraggedToOffset/index.js'
+export { raiseDragged } from './raiseDragged/index.js'
 export { returnDraggedToStart } from './returnDraggedToStart/index.js'
+export { restoreDraggedStyle } from './restoreDraggedStyle/index.js'
 export { swapDraggedWithWatcher } from './swapDraggedWithWatcher/index.js'

@@ -1,7 +1,25 @@
 // dist/index.js
-function dropDraggedOnTarget(dragged, target, commit, animationDuration) {
-  const position = dragged.style.position;
-  const zIndex = dragged.style.zIndex;
+function raiseDragged(dragged) {
+  const restoredStyle = {
+    position: dragged.style.position,
+    transform: dragged.style.transform,
+    transition: dragged.style.transition,
+    zIndex: dragged.style.zIndex
+  };
+  if (dragged.ownerDocument.defaultView?.getComputedStyle(dragged).position === "static")
+    dragged.style.position = "relative";
+  dragged.style.zIndex = "2147483647";
+  return restoredStyle;
+}
+function restoreDraggedStyle(dragged, restoredStyle) {
+  dragged.style.position = restoredStyle.position;
+  dragged.style.transform = restoredStyle.transform;
+  dragged.style.transition = restoredStyle.transition;
+  dragged.style.zIndex = restoredStyle.zIndex;
+}
+function dropDraggedOnTarget(dragged, target, commit, animationDuration, restoredStyle) {
+  const raisedStyle = raiseDragged(dragged);
+  const nextRestoredStyle = restoredStyle ?? raisedStyle;
   const x = Number(dragged.dataset.x ?? 0);
   const y = Number(dragged.dataset.y ?? 0);
   const from = dragged.getBoundingClientRect();
@@ -11,17 +29,15 @@ function dropDraggedOnTarget(dragged, target, commit, animationDuration) {
     [{ transform: dragged.style.transform || "none" }, { transform: next }],
     { duration: animationDuration, easing: "ease" }
   );
-  if (dragged.ownerDocument.defaultView?.getComputedStyle(dragged).position === "static")
-    dragged.style.position = "relative";
-  dragged.style.zIndex = "2147483647";
   dragged.style.transform = next;
   void animation.finished.finally(() => {
     void commit();
     delete dragged.dataset.x;
     delete dragged.dataset.y;
-    dragged.style.transform = "";
-    dragged.style.position = position;
-    dragged.style.zIndex = zIndex;
+    void restoreDraggedStyle(dragged, {
+      ...nextRestoredStyle,
+      transform: ""
+    });
   });
 }
 function intersects(a, b) {
@@ -51,9 +67,7 @@ function returnDraggedToStart(dragged, animationDuration, restoredStyle) {
       dragged.style.transform = "";
       return;
     }
-    dragged.style.transform = restoredStyle.transform;
-    if (restoredStyle.transition !== void 0)
-      dragged.style.transition = restoredStyle.transition;
+    void restoreDraggedStyle(dragged, restoredStyle);
   });
 }
 function swapDraggedWithWatcher(dragged, watcher, animationDuration) {
@@ -85,9 +99,8 @@ function drag(pointerEvent, onIntersectingStart, onIntersectingStop, onMove) {
   const target = pointerEvent.target;
   if (!(target instanceof HTMLElement)) return;
   const ownerDocument = target.ownerDocument;
-  const position = target.style.position;
+  const restoredStyle = raiseDragged(target);
   const userSelect = ownerDocument.body.style.userSelect;
-  const zIndex = target.style.zIndex;
   let watcher;
   let intersecting = false;
   const closestWatcher = (event) => {
@@ -123,8 +136,11 @@ function drag(pointerEvent, onIntersectingStart, onIntersectingStop, onMove) {
     void ownerDocument.removeEventListener("pointerup", stop, true);
     void ownerDocument.removeEventListener("pointercancel", stop, true);
     ownerDocument.body.style.userSelect = userSelect;
-    target.style.position = position;
-    target.style.zIndex = zIndex;
+    void restoreDraggedStyle(target, {
+      ...restoredStyle,
+      transform: target.style.transform,
+      transition: target.style.transition
+    });
     if (target.hasPointerCapture(event.pointerId))
       void target.releasePointerCapture(event.pointerId);
     if (event.target !== target) {
@@ -134,9 +150,6 @@ function drag(pointerEvent, onIntersectingStart, onIntersectingStop, onMove) {
     }
   };
   ownerDocument.body.style.userSelect = "none";
-  if (ownerDocument.defaultView?.getComputedStyle(target).position === "static")
-    target.style.position = "relative";
-  target.style.zIndex = "2147483647";
   void target.setPointerCapture(pointerEvent.pointerId);
   void ownerDocument.addEventListener("pointermove", move, true);
   void ownerDocument.addEventListener("pointerup", stop, true);
@@ -159,9 +172,8 @@ var DragArea = class {
     );
     for (const item of this.members) {
       void item.addEventListener("pointerdown", (event) => {
+        const restoredStyle = raiseDragged(item);
         for (const animation of item.getAnimations()) animation.cancel();
-        const originalTransform = item.style.transform;
-        const originalTransition = item.style.transition;
         item.dataset.dragging = "true";
         item.style.transition = "none";
         void drag(
@@ -192,10 +204,7 @@ var DragArea = class {
         const stop = () => {
           if (item.dataset.dragging !== "true") return;
           delete item.dataset.dragging;
-          void returnDraggedToStart(item, this.animationDuration, {
-            transform: originalTransform,
-            transition: originalTransition
-          });
+          void returnDraggedToStart(item, this.animationDuration, restoredStyle);
           void this.eventTarget.dispatchEvent(
             new CustomEvent("settle", {
               detail: { thisEl: item }
@@ -212,15 +221,22 @@ var DragArea = class {
   animationDuration;
   members;
   eventTarget = new EventTarget();
+  restoredStyles = /* @__PURE__ */ new Map();
   remoteDrag({ thisEl, x, y }) {
     for (const animation of thisEl.getAnimations()) animation.cancel();
+    if (!this.restoredStyles.has(thisEl)) {
+      this.restoredStyles.set(thisEl, raiseDragged(thisEl));
+      thisEl.style.transition = "none";
+    }
     void moveDraggedToOffset(thisEl, x, y);
   }
   remoteSwap({ thisEl, withEl }) {
     void swapDraggedWithWatcher(thisEl, withEl, this.animationDuration);
   }
   remoteSettle({ thisEl }) {
-    void returnDraggedToStart(thisEl, this.animationDuration);
+    const restoredStyle = this.restoredStyles.get(thisEl);
+    void this.restoredStyles.delete(thisEl);
+    void returnDraggedToStart(thisEl, this.animationDuration, restoredStyle);
   }
   getMemberById(id) {
     return this.members.find((member) => member.id === id);
@@ -335,10 +351,15 @@ var DragTarget = class {
   targets;
   abortController = new AbortController();
   eventTarget = new EventTarget();
+  restoredStyles = /* @__PURE__ */ new Map();
   used = false;
   remoteDrag({ thisEl, x, y }) {
     if (this.used || thisEl !== this.dragged) return;
     for (const animation of thisEl.getAnimations()) animation.cancel();
+    if (!this.restoredStyles.has(thisEl)) {
+      this.restoredStyles.set(thisEl, raiseDragged(thisEl));
+      thisEl.style.transition = "none";
+    }
     void moveDraggedToOffset(thisEl, x, y);
   }
   remoteSwap({ thisEl, withEl }) {
@@ -346,6 +367,8 @@ var DragTarget = class {
     const target = this.targets.find((target2) => target2 === withEl);
     if (!target) return;
     this.used = true;
+    const restoredStyle = this.restoredStyles.get(thisEl);
+    void this.restoredStyles.delete(thisEl);
     for (const watchedTarget of this.targets)
       void stopWatch(watchedTarget, this.dragged);
     void this.abortController.abort();
@@ -356,12 +379,15 @@ var DragTarget = class {
         if (this.action === "replace") void target.replaceWith(thisEl);
         else void target.appendChild(thisEl);
       },
-      this.animationDuration
+      this.animationDuration,
+      restoredStyle
     );
   }
   remoteSettle({ thisEl }) {
     if (this.used || thisEl !== this.dragged) return;
-    void returnDraggedToStart(thisEl, this.animationDuration);
+    const restoredStyle = this.restoredStyles.get(thisEl);
+    void this.restoredStyles.delete(thisEl);
+    void returnDraggedToStart(thisEl, this.animationDuration, restoredStyle);
   }
   getTargetById(id) {
     return this.targets.find((target) => target.id === id);
