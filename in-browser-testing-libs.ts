@@ -21,18 +21,18 @@ for (const controls of controlsArr) {
   area.addEventListener('drag', ({ detail }) => {
     for (const otherArea of areaArr) {
       if (otherArea === area) continue
-      const thisEl = area.getMemberById(detail.thisEl.id)
+      const thisEl = otherArea.getMemberById(detail.thisEl.id)
       if (!thisEl) return
-      area.remoteDrag({ thisEl, x: detail.x, y: detail.y })
+      otherArea.remoteDrag({ thisEl, x: detail.x, y: detail.y })
     }
   })
   area.addEventListener('swap', ({ detail }) => {
     for (const otherArea of areaArr) {
       if (otherArea === area) continue
-      const thisEl = area.getMemberById(detail.thisEl.id)
-      const withEl = area.getMemberById(detail.withEl.id)
+      const thisEl = otherArea.getMemberById(detail.thisEl.id)
+      const withEl = otherArea.getMemberById(detail.withEl.id)
       if (!thisEl || !withEl) return
-      area.remoteSwap({ thisEl, withEl })
+      otherArea.remoteSwap({ thisEl, withEl })
     }
   })
 }

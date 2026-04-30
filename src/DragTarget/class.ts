@@ -134,6 +134,10 @@ export class DragTarget {
     )
   }
 
+  getTargetById(id: string): HTMLElement | undefined {
+    return this.targets.find((target) => target.id === id)
+  }
+
   addEventListener<K extends keyof DragTargetEventMap>(
     type: K,
     listener: DragTargetEventListenerFor<K> | null,
