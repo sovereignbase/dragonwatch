@@ -75,19 +75,7 @@ function stopWatch(watcher, elementToWatch) {
   if (watcher.dataset.dragndropWatches === elementToWatch.dataset.dragndropId)
     delete watcher.dataset.dragndropWatches;
 }
-var lift = (element) => {
-  const position = element.style.position;
-  const zIndex = element.style.zIndex;
-  if (getComputedStyle(element).position === "static")
-    element.style.position = "relative";
-  element.style.zIndex = "2147483647";
-  return () => {
-    element.style.position = position;
-    element.style.zIndex = zIndex;
-  };
-};
 var moveTo = (dragged, target, change, animationDuration) => {
-  const restore = lift(dragged);
   const x = Number(dragged.dataset.x ?? 0);
   const y = Number(dragged.dataset.y ?? 0);
   const from = dragged.getBoundingClientRect();
@@ -103,7 +91,6 @@ var moveTo = (dragged, target, change, animationDuration) => {
     delete dragged.dataset.x;
     delete dragged.dataset.y;
     dragged.style.transform = "";
-    restore();
   });
 };
 var moveBack = (dragged, animationDuration) => {
@@ -151,69 +138,70 @@ var appendedDragTargetFor = (dragged, parent, animationDuration = 200) => target
   () => void parent.appendChild(dragged),
   animationDuration
 );
-function swapify(elements, animationDuration = 200) {
-  const items = Array.from(elements).filter(
-    (element) => element instanceof HTMLElement
-  );
-  for (const item of items) {
-    item.addEventListener("pointerdown", (event) => {
-      for (const animation of item.getAnimations()) animation.cancel();
-      const originalTransform = item.style.transform;
-      const originalTransition = item.style.transition;
-      item.dataset.dragging = "true";
-      item.style.transition = "none";
-      drag(event, (dragged, watcher) => {
-        const draggedRect = dragged.getBoundingClientRect();
-        const watcherRect = watcher.getBoundingClientRect();
-        const marker = watcher.ownerDocument.createTextNode("");
-        void watcher.parentNode?.insertBefore(marker, watcher);
-        void dragged.parentNode?.insertBefore(watcher, dragged);
-        void marker.parentNode?.insertBefore(dragged, marker);
-        marker.remove();
-        const nextDraggedRect = dragged.getBoundingClientRect();
-        const nextWatcherRect = watcher.getBoundingClientRect();
-        const x = Number(dragged.dataset.x ?? 0) + draggedRect.left - nextDraggedRect.left;
-        const y = Number(dragged.dataset.y ?? 0) + draggedRect.top - nextDraggedRect.top;
-        dragged.dataset.x = String(x);
-        dragged.dataset.y = String(y);
-        dragged.style.transform = `translate(${x}px, ${y}px)`;
-        watcher.animate(
-          [
-            {
-              transform: `translate(${watcherRect.left - nextWatcherRect.left}px, ${watcherRect.top - nextWatcherRect.top}px)`
-            },
-            { transform: "none" }
-          ],
-          { duration: animationDuration, easing: "ease" }
-        );
-      });
-      for (const other of items) if (other !== item) startWatch(other, item);
-      const stop = () => {
-        if (item.dataset.dragging !== "true") return;
-        delete item.dataset.dragging;
-        const currentTransform = item.style.transform || "none";
-        const nextTransform = originalTransform || "none";
-        const animation = item.animate(
-          [
-            { transform: currentTransform },
-            { transform: nextTransform }
-          ],
-          { duration: animationDuration, easing: "ease" }
-        );
-        item.style.transform = nextTransform;
-        void animation.finished.finally(() => {
-          item.style.transform = originalTransform;
-          item.style.transition = originalTransition;
+var DragArea = class {
+  constructor(elements, animationDuration = 200) {
+    const items = Array.from(elements).filter(
+      (element) => element instanceof HTMLElement
+    );
+    for (const item of items) {
+      item.addEventListener("pointerdown", (event) => {
+        for (const animation of item.getAnimations()) animation.cancel();
+        const originalTransform = item.style.transform;
+        const originalTransition = item.style.transition;
+        item.dataset.dragging = "true";
+        item.style.transition = "none";
+        void drag(event, (dragged, watcher) => {
+          const draggedRect = dragged.getBoundingClientRect();
+          const watcherRect = watcher.getBoundingClientRect();
+          const marker = watcher.ownerDocument.createTextNode("");
+          void watcher.parentNode?.insertBefore(marker, watcher);
+          void dragged.parentNode?.insertBefore(watcher, dragged);
+          void marker.parentNode?.insertBefore(dragged, marker);
+          marker.remove();
+          const nextDraggedRect = dragged.getBoundingClientRect();
+          const nextWatcherRect = watcher.getBoundingClientRect();
+          const x = Number(dragged.dataset.x ?? 0) + draggedRect.left - nextDraggedRect.left;
+          const y = Number(dragged.dataset.y ?? 0) + draggedRect.top - nextDraggedRect.top;
+          dragged.dataset.x = String(x);
+          dragged.dataset.y = String(y);
+          dragged.style.transform = `translate(${x}px, ${y}px)`;
+          void watcher.animate(
+            [
+              {
+                transform: `translate(${watcherRect.left - nextWatcherRect.left}px, ${watcherRect.top - nextWatcherRect.top}px)`
+              },
+              { transform: "none" }
+            ],
+            { duration: animationDuration, easing: "ease" }
+          );
         });
-        delete item.dataset.x;
-        delete item.dataset.y;
-        for (const other of items) if (other !== item) stopWatch(other, item);
-      };
-      item.addEventListener("pointerup", stop, { once: true });
-      item.addEventListener("pointercancel", stop, { once: true });
-    });
+        for (const other of items)
+          if (other !== item) void startWatch(other, item);
+        const stop = () => {
+          if (item.dataset.dragging !== "true") return;
+          delete item.dataset.dragging;
+          const currentTransform = item.style.transform || "none";
+          const nextTransform = originalTransform || "none";
+          const animation = item.animate(
+            [{ transform: currentTransform }, { transform: nextTransform }],
+            { duration: animationDuration, easing: "ease" }
+          );
+          item.style.transform = nextTransform;
+          void animation.finished.finally(() => {
+            item.style.transform = originalTransform;
+            item.style.transition = originalTransition;
+          });
+          delete item.dataset.x;
+          delete item.dataset.y;
+          for (const other of items)
+            if (other !== item) void stopWatch(other, item);
+        };
+        void item.addEventListener("pointerup", stop, { once: true });
+        void item.addEventListener("pointercancel", stop, { once: true });
+      });
+    }
   }
-}
+};
 
 // in-browser-testing-libs.ts
 var controls = document.querySelector("div.controls");
@@ -223,7 +211,7 @@ for (let i = 0; i < 12; i++) {
   box.textContent = `${i + 1}`;
   void controls.appendChild(box);
 }
-swapify(controls.children);
+new DragArea(controls.children);
 var connect = (demo, template, targetFor2) => {
   const row = demo.querySelector(".target-row");
   const reset = demo.querySelector("[data-reset]");
@@ -244,9 +232,7 @@ var connect = (demo, template, targetFor2) => {
 var replaceDemo = document.querySelector(
   "[data-replace-demo]"
 );
-var appendDemo = document.querySelector(
-  "[data-append-demo]"
-);
+var appendDemo = document.querySelector("[data-append-demo]");
 var replaceTemplate = document.querySelector(
   "#replace-demo-template"
 );

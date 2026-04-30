@@ -1,7 +1,7 @@
 import {
   appendedDragTargetFor,
   replacedDragTargetFor,
-  swapify,
+  DragArea,
 } from './dist/index.js'
 
 const controls: HTMLElement | null = document.querySelector('div.controls')
@@ -14,7 +14,7 @@ for (let i = 0; i < 12; i++) {
   void controls.appendChild(box)
 }
 
-swapify(controls.children)
+new DragArea(controls.children)
 
 const connect = (
   demo: HTMLElement,
@@ -43,9 +43,8 @@ const connect = (
 const replaceDemo: HTMLElement | null = document.querySelector(
   '[data-replace-demo]'
 )
-const appendDemo: HTMLElement | null = document.querySelector(
-  '[data-append-demo]'
-)
+const appendDemo: HTMLElement | null =
+  document.querySelector('[data-append-demo]')
 const replaceTemplate: HTMLTemplateElement | null = document.querySelector(
   '#replace-demo-template'
 )

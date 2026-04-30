@@ -1,25 +1,12 @@
 import { drag } from '../drag/index.js'
 import { startWatch, stopWatch } from '../watch/index.js'
 
-const lift = (element: HTMLElement): (() => void) => {
-  const position = element.style.position
-  const zIndex = element.style.zIndex
-  if (getComputedStyle(element).position === 'static')
-    element.style.position = 'relative'
-  element.style.zIndex = '2147483647'
-  return () => {
-    element.style.position = position
-    element.style.zIndex = zIndex
-  }
-}
-
 const moveTo = (
   dragged: HTMLElement,
   target: HTMLElement,
   change: () => void,
   animationDuration: number
 ): void => {
-  const restore = lift(dragged)
   const x = Number(dragged.dataset.x ?? 0)
   const y = Number(dragged.dataset.y ?? 0)
   const from = dragged.getBoundingClientRect()
@@ -37,7 +24,6 @@ const moveTo = (
     delete dragged.dataset.x
     delete dragged.dataset.y
     dragged.style.transform = ''
-    restore()
   })
 }
 
@@ -81,26 +67,21 @@ const targetFor = (
   })
 }
 
-export const replacedDragTargetFor = (
-  dragged: HTMLElement,
-  replaced: HTMLElement,
-  animationDuration: number = 200
-): void =>
-  targetFor(
-    dragged,
-    replaced,
-    () => void replaced.replaceWith(dragged),
-    animationDuration
-  )
-
-export const appendedDragTargetFor = (
-  dragged: HTMLElement,
-  parent: HTMLElement,
-  animationDuration: number = 200
-): void =>
-  targetFor(
-    dragged,
-    parent,
-    () => void parent.appendChild(dragged),
-    animationDuration
-  )
+export class DragTarget {
+  constructor(
+    dragged: HTMLElement,
+    target: HTMLElement,
+    action: 'replace' | 'append',
+    animationDuration: number = 200
+  ) {
+    targetFor(
+      dragged,
+      target,
+      () =>
+        void (action === 'replace' ? target.replaceWith : target.appendChild)(
+          dragged
+        ),
+      animationDuration
+    )
+  }
+}
