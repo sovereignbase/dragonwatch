@@ -5,6 +5,37 @@
     <meta name="color-scheme" content="dark" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sovereignbase dragonwatch library demo</title>
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
+    <link rel="dns-prefetch" href="//cdn.simpleicons.org" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.simpleicons.org" crossorigin />
+    <link rel="modulepreload" href="./index.js" />
+    <link
+      rel="preload"
+      as="style"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="script"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"
+      crossorigin
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css"
+      crossorigin
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://sovereignbase.dev/sovereignbase_logo.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="https://sovereignbase.dev/sovereignbase_logo.png"
+    />
     <style>
       :root {
         color-scheme: dark;
@@ -331,12 +362,29 @@
           comes from :p. The library is also collaboration ready. Just try it!
         </p>
         <div class="row">
+          <h5>DragArea 1</h5>
           <div class="controls"></div>
+          <h5>DragArea 2</h5>
           <div class="controls"></div>
         </div>
+
         <div class="target-demos">
           <section class="target-demo" data-replace-demo>
+            <h5>DragTarget with replace mode</h5>
             <div class="target-row">
+              <h5>DragTarget 1</h5>
+              <div class="target-slot">
+                <div class="target-box" data-dragged>dragged</div>
+              </div>
+              <div class="target-slot">
+                <div class="target-box" data-target>replace A</div>
+              </div>
+              <div class="target-slot">
+                <div class="target-box" data-target>replace B</div>
+              </div>
+            </div>
+            <div class="target-row">
+              <h5>DragTarget 2</h5>
               <div class="target-slot">
                 <div class="target-box" data-dragged>dragged</div>
               </div>
@@ -349,8 +397,23 @@
             </div>
             <button type="button" data-reset>reset</button>
           </section>
+
           <section class="target-demo" data-append-demo>
+            <h5>DragTarget with append mode</h5>
             <div class="target-row">
+              <h5>DragTarget 1</h5>
+              <div class="target-slot">
+                <div class="target-box" data-dragged>dragged</div>
+              </div>
+              <div class="target-slot">
+                <div class="target-box" data-target>append A</div>
+              </div>
+              <div class="target-slot">
+                <div class="target-box" data-target>append B</div>
+              </div>
+            </div>
+            <div class="target-row">
+              <h5>DragTarget 2</h5>
               <div class="target-slot">
                 <div class="target-box" data-dragged>dragged</div>
               </div>
@@ -364,6 +427,123 @@
             <button type="button" data-reset>reset</button>
           </section>
         </div>
+
+        <h5>Powered by few lines of typescript</h5>
+        <pre>
+          <code class="language-typescript">import { DragArea, DragTarget } from './dist/index.js'
+
+const controlsArr: HTMLElement[] = Array.from(
+  document.querySelectorAll('div.controls')
+)
+
+const areaArr: DragArea[] = []
+
+for (const controls of controlsArr) {
+  if (!controls) throw new Error()
+  for (let i = 0; i < 9; i++) {
+    const box = document.createElement('div')
+    box.id = `box:${i + 1}`
+    box.textContent = `${i + 1}`
+    void controls.appendChild(box)
+  }
+
+  const area = new DragArea(controls.children)
+  void areaArr.push(area)
+  area.addEventListener('drag', ({ detail }) => {
+    for (const otherArea of areaArr) {
+      if (otherArea === area) continue
+      const thisEl = otherArea.getMemberById(detail.thisEl.id)
+      if (!thisEl) continue
+      void otherArea.remoteDrag({ thisEl, x: detail.x, y: detail.y })
+    }
+  })
+  area.addEventListener('swap', ({ detail }) => {
+    for (const otherArea of areaArr) {
+      if (otherArea === area) continue
+      const thisEl = otherArea.getMemberById(detail.thisEl.id)
+      const withEl = otherArea.getMemberById(detail.withEl.id)
+      if (!thisEl || !withEl) continue
+      void otherArea.remoteSwap({ thisEl, withEl })
+    }
+  })
+  area.addEventListener('settle', ({ detail }) => {
+    for (const otherArea of areaArr) {
+      if (otherArea === area) continue
+      const thisEl = otherArea.getMemberById(detail.thisEl.id)
+      if (!thisEl) continue
+      void otherArea.remoteSettle({ thisEl })
+    }
+  })
+}
+////////////////////////////////////////////////////////////////////////////////////
+const connect = (
+  demo: HTMLElement,
+  template: HTMLTemplateElement,
+  targetFor: (
+    dragged: HTMLElement,
+    targets: readonly HTMLElement[]
+  ) => DragTarget
+): void => {
+  const row: HTMLElement | null = demo.querySelector('.target-row')
+  const reset: HTMLButtonElement | null = demo.querySelector('[data-reset]')
+  if (!row || !reset) throw new Error()
+
+  const fill = (): void => {
+    row.replaceChildren(template.content.cloneNode(true))
+    const dragged: HTMLElement | null = row.querySelector('[data-dragged]')
+    const targets = Array.from(row.querySelectorAll('[data-target]')).filter(
+      (element): element is HTMLElement => element instanceof HTMLElement
+    )
+    if (!dragged || targets.length === 0) throw new Error()
+    watchTarget(targetFor(dragged, targets))
+  }
+
+  reset.addEventListener('click', fill)
+  const dragged: HTMLElement | null = row.querySelector('[data-dragged]')
+  const targets = Array.from(row.querySelectorAll('[data-target]')).filter(
+    (element): element is HTMLElement => element instanceof HTMLElement
+  )
+  if (!dragged || targets.length === 0) throw new Error()
+  watchTarget(targetFor(dragged, targets))
+}
+
+const watchTarget = (dragTarget: DragTarget): void => {
+  dragTarget.addEventListener('intersecting', ({ detail }) => {
+    detail.withEl.dataset.intersecting = 'true'
+  })
+  dragTarget.addEventListener('notintersecting', ({ detail }) => {
+    delete detail.withEl.dataset.intersecting
+  })
+  dragTarget.addEventListener('swap', ({ detail }) => {
+    delete detail.withEl.dataset.intersecting
+  })
+}
+
+const replaceDemo: HTMLElement | null = document.querySelector(
+  '[data-replace-demo]'
+)
+const appendDemo: HTMLElement | null =
+  document.querySelector('[data-append-demo]')
+const replaceTemplate: HTMLTemplateElement | null = document.querySelector(
+  '#replace-demo-template'
+)
+const appendTemplate: HTMLTemplateElement | null = document.querySelector(
+  '#append-demo-template'
+)
+if (!replaceDemo || !appendDemo || !replaceTemplate || !appendTemplate)
+  throw new Error()
+
+connect(
+  replaceDemo,
+  replaceTemplate,
+  (dragged, target) => new DragTarget(dragged, target, 'replace')
+)
+connect(
+  appendDemo,
+  appendTemplate,
+  (dragged, target) => new DragTarget(dragged, target, 'append')
+)
+</code></pre>
       </section>
     </main>
     <template id="replace-demo-template">
@@ -389,5 +569,12 @@
       </div>
     </template>
     <script type="module" src="index.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"
+      crossorigin
+    ></script>
+    <script>
+      hljs.highlightAll()
+    </script>
   </body>
 </html>

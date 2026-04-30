@@ -16,13 +16,13 @@ for (const controls of controlsArr) {
   }
 
   const area = new DragArea(controls.children)
-  areaArr.push(area)
+  void areaArr.push(area)
   area.addEventListener('drag', ({ detail }) => {
     for (const otherArea of areaArr) {
       if (otherArea === area) continue
       const thisEl = otherArea.getMemberById(detail.thisEl.id)
       if (!thisEl) continue
-      otherArea.remoteDrag({ thisEl, x: detail.x, y: detail.y })
+      void otherArea.remoteDrag({ thisEl, x: detail.x, y: detail.y })
     }
   })
   area.addEventListener('swap', ({ detail }) => {
@@ -31,7 +31,7 @@ for (const controls of controlsArr) {
       const thisEl = otherArea.getMemberById(detail.thisEl.id)
       const withEl = otherArea.getMemberById(detail.withEl.id)
       if (!thisEl || !withEl) continue
-      otherArea.remoteSwap({ thisEl, withEl })
+      void otherArea.remoteSwap({ thisEl, withEl })
     }
   })
   area.addEventListener('settle', ({ detail }) => {
@@ -39,7 +39,7 @@ for (const controls of controlsArr) {
       if (otherArea === area) continue
       const thisEl = otherArea.getMemberById(detail.thisEl.id)
       if (!thisEl) continue
-      otherArea.remoteSettle({ thisEl })
+      void otherArea.remoteSettle({ thisEl })
     }
   })
 }
