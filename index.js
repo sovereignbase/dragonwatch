@@ -199,10 +199,10 @@ var DragArea = class {
   }
   animationDuration;
   eventTarget = new EventTarget();
-  manualDrag({ thisEl, x, y }) {
+  remoteDrag({ thisEl, x, y }) {
     void moveDraggedToOffset(thisEl, x, y);
   }
-  manualSwap({ thisEl, withEl }) {
+  remoteSwap({ thisEl, withEl }) {
     void swapDraggedWithWatcher(thisEl, withEl, this.animationDuration);
   }
   addEventListener(type, listener, options) {
@@ -226,66 +226,87 @@ var DragTarget = class {
     this.target = target;
     this.action = action;
     this.animationDuration = animationDuration;
-    void this.dragged.addEventListener("pointerdown", (event) => {
-      let active = false;
-      startWatch(this.target, this.dragged);
-      void drag(
-        event,
-        () => {
-          active = true;
-        },
-        () => {
+    void this.dragged.addEventListener(
+      "pointerdown",
+      (event) => {
+        if (this.used) return;
+        let active = false;
+        void startWatch(this.target, this.dragged);
+        void drag(
+          event,
+          () => {
+            active = true;
+          },
+          () => {
+            active = false;
+          },
+          (_dragged, { thisEl, x, y }, pointerEvent) => {
+            void this.eventTarget.dispatchEvent(
+              new CustomEvent("drag", {
+                detail: { pointerEvent, thisEl, x, y }
+              })
+            );
+          }
+        );
+        const stop = () => {
+          if (this.used) return;
+          void stopWatch(this.target, this.dragged);
+          if (active) {
+            this.used = true;
+            void this.abortController.abort();
+            void dropDraggedOnTarget(
+              this.dragged,
+              this.target,
+              () => {
+                if (this.action === "replace")
+                  void this.target.replaceWith(this.dragged);
+                else void this.target.appendChild(this.dragged);
+                void this.eventTarget.dispatchEvent(
+                  new CustomEvent("swap", {
+                    detail: { thisEl: this.dragged, withEl: this.target }
+                  })
+                );
+              },
+              this.animationDuration
+            );
+          } else {
+            void returnDraggedToStart(this.dragged, this.animationDuration);
+          }
           active = false;
-        },
-        (_dragged, { thisEl, x, y }, pointerEvent) => {
-          void this.eventTarget.dispatchEvent(
-            new CustomEvent("drag", {
-              detail: { pointerEvent, thisEl, x, y }
-            })
-          );
-        }
-      );
-      const stop = () => {
-        stopWatch(this.target, this.dragged);
-        if (active) {
-          void dropDraggedOnTarget(
-            this.dragged,
-            this.target,
-            () => {
-              if (this.action === "replace")
-                this.target.replaceWith(this.dragged);
-              else void this.target.appendChild(this.dragged);
-              void this.eventTarget.dispatchEvent(
-                new CustomEvent("swap", {
-                  detail: { thisEl: this.dragged, withEl: this.target }
-                })
-              );
-            },
-            this.animationDuration
-          );
-        } else {
-          void returnDraggedToStart(this.dragged, this.animationDuration);
-        }
-        active = false;
-      };
-      void this.dragged.addEventListener("pointerup", stop, { once: true });
-      void this.dragged.addEventListener("pointercancel", stop, { once: true });
-    });
+        };
+        void this.dragged.addEventListener("pointerup", stop, {
+          once: true,
+          signal: this.abortController.signal
+        });
+        void this.dragged.addEventListener("pointercancel", stop, {
+          once: true,
+          signal: this.abortController.signal
+        });
+      },
+      { signal: this.abortController.signal }
+    );
   }
   dragged;
   target;
   action;
   animationDuration;
+  abortController = new AbortController();
   eventTarget = new EventTarget();
-  manualDrag({ thisEl, x, y }) {
+  used = false;
+  remoteDrag({ thisEl, x, y }) {
+    if (this.used) return;
     void moveDraggedToOffset(thisEl, x, y);
   }
-  manualSwap({ thisEl, withEl }) {
+  remoteSwap({ thisEl, withEl }) {
+    if (this.used) return;
+    this.used = true;
+    void stopWatch(this.target, this.dragged);
+    void this.abortController.abort();
     void dropDraggedOnTarget(
       thisEl,
       withEl,
       () => {
-        if (this.action === "replace") withEl.replaceWith(thisEl);
+        if (this.action === "replace") void withEl.replaceWith(thisEl);
         else void withEl.appendChild(thisEl);
       },
       this.animationDuration
