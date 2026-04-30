@@ -1,0 +1,112 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - navigation "Project links" [ref=e4]:
+      - generic [ref=e5]:
+        - link "jsr" [ref=e6] [cursor=pointer]:
+          - /url: https://jsr.io/@sovereignbase/dragonwatch
+        - link "npm" [ref=e7] [cursor=pointer]:
+          - /url: https://www.npmjs.com/package/@sovereignbase/dragonwatch
+        - link "GitHub" [ref=e8] [cursor=pointer]:
+          - /url: https://github.com/sovereignbase/dragonwatch
+        - link "Docs" [ref=e9] [cursor=pointer]:
+          - /url: https://sovereignbase.dev/dragonwatch/docs
+    - heading "Dragonwatch" [level=1] [ref=e10]
+    - paragraph [ref=e11]: All functionality uses two functions (drag and watch) where the name comes from :p. The library is also collaboration ready. Just try it!
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - heading "DragArea 1" [level=5] [ref=e14]
+        - generic [ref=e15]:
+          - generic [ref=e16]: "1"
+          - generic [ref=e17]: "2"
+          - generic [ref=e18]: "3"
+          - generic [ref=e19]: "4"
+          - generic [ref=e20]: "5"
+          - generic [ref=e21]: "6"
+          - generic [ref=e22]: "7"
+          - generic [ref=e23]: "8"
+          - generic [ref=e24]: "9"
+      - generic [ref=e25]:
+        - heading "DragArea 2" [level=5] [ref=e26]
+        - generic [ref=e27]:
+          - generic [ref=e28]: "1"
+          - generic [ref=e29]: "2"
+          - generic [ref=e30]: "3"
+          - generic [ref=e31]: "4"
+          - generic [ref=e32]: "5"
+          - generic [ref=e33]: "6"
+          - generic [ref=e34]: "7"
+          - generic [ref=e35]: "8"
+          - generic [ref=e36]: "9"
+    - generic [ref=e37]:
+      - generic [ref=e38]:
+        - heading "DragTarget with replace mode" [level=5] [ref=e39]
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - heading "DragTarget 1" [level=5] [ref=e42]
+            - generic [ref=e43]:
+              - generic [ref=e45]: dragged
+              - generic [ref=e47]: replace A
+              - generic [ref=e49]: replace B
+          - generic [ref=e50]:
+            - heading "DragTarget 2" [level=5] [ref=e51]
+            - generic [ref=e52]:
+              - generic [ref=e54]: dragged
+              - generic [ref=e56]: replace A
+              - generic [ref=e58]: replace B
+        - button "reset" [ref=e59] [cursor=pointer]
+      - generic [ref=e60]:
+        - heading "DragTarget with append mode" [level=5] [ref=e61]
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - heading "DragTarget 1" [level=5] [ref=e64]
+            - generic [ref=e65]:
+              - generic [ref=e67]: dragged
+              - generic [ref=e69]: append A
+              - generic [ref=e71]: append B
+          - generic [ref=e72]:
+            - heading "DragTarget 2" [level=5] [ref=e73]
+            - generic [ref=e74]:
+              - generic [ref=e76]: dragged
+              - generic [ref=e78]: append A
+              - generic [ref=e80]: append B
+        - button "reset" [ref=e81] [cursor=pointer]
+    - heading "Powered by few lines of typescript" [level=5] [ref=e82]
+    - code [ref=e84]:
+      - text: "import { DragArea, DragTarget } from '@sovereignbase/dragonwatch' const controlsArr: HTMLElement[] = Array.from( document.querySelectorAll('div.controls') ) const areaArr: DragArea[] = [] for (const controls of controlsArr) { if (!controls) throw new Error() for (let i = 0; i < 9; i++) { const box = document.createElement('div') box.id ="
+      - generic [ref=e85]:
+        - text: "`box:"
+        - generic [ref=e86]: "${i + 1}"
+        - text: "`"
+      - text: box.textContent =
+      - generic [ref=e87]:
+        - text: "`"
+        - generic [ref=e88]: "${i + 1}"
+        - text: "`"
+      - text: "void controls.appendChild(box) } const area = new DragArea(controls.children) void areaArr.push(area) area.addEventListener('drag',"
+      - generic [ref=e89]: "({ detail }) =>"
+      - text: "{ for (const otherArea of areaArr) { if (otherArea === area) continue const thisEl = otherArea.getMemberById(detail.thisEl.id) if (!thisEl) continue void otherArea.remoteDrag({ thisEl, x: detail.x, y: detail.y }) } }) area.addEventListener('swap',"
+      - generic [ref=e90]: "({ detail }) =>"
+      - text: "{ for (const otherArea of areaArr) { if (otherArea === area) continue const thisEl = otherArea.getMemberById(detail.thisEl.id) const withEl = otherArea.getMemberById(detail.withEl.id) if (!thisEl || !withEl) continue void otherArea.remoteSwap({ thisEl, withEl }) } }) area.addEventListener('settle',"
+      - generic [ref=e91]: "({ detail }) =>"
+      - text: "{ for (const otherArea of areaArr) { if (otherArea === area) continue const thisEl = otherArea.getMemberById(detail.thisEl.id) if (!thisEl) continue void otherArea.remoteSettle({ thisEl }) } }) } //////////////////////////////////////////////////////////////////////////////////// const connect = ( demo: HTMLElement, template: HTMLTemplateElement, targetFor:"
+      - generic [ref=e92]:
+        - text: (
+        - generic [ref=e93]: "dragged: HTMLElement, targets: readonly HTMLElement[]"
+        - text: ) =>
+      - text: "DragTarget ):"
+      - generic [ref=e94]: void =>
+      - text: "{ const row: HTMLElement | null = demo.querySelector('.target-row') const reset: HTMLButtonElement | null = demo.querySelector('[data-reset]') if (!row || !reset) throw new Error() const fill = ():"
+      - generic [ref=e95]: void =>
+      - text: "{ row.replaceChildren(template.content.cloneNode(true)) const dragged: HTMLElement | null = row.querySelector('[data-dragged]') const targets = Array.from(row.querySelectorAll('[data-target]')).filter( (element): element is HTMLElement => element instanceof HTMLElement ) if (!dragged || targets.length === 0) throw new Error() watchTarget(targetFor(dragged, targets)) } reset.addEventListener('click', fill) const dragged: HTMLElement | null = row.querySelector('[data-dragged]') const targets = Array.from(row.querySelectorAll('[data-target]')).filter( (element): element is HTMLElement => element instanceof HTMLElement ) if (!dragged || targets.length === 0) throw new Error() watchTarget(targetFor(dragged, targets)) } const watchTarget = (dragTarget: DragTarget):"
+      - generic [ref=e96]: void =>
+      - text: "{ dragTarget.addEventListener('intersecting',"
+      - generic [ref=e97]: "({ detail }) =>"
+      - text: "{ detail.withEl.dataset.intersecting = 'true' }) dragTarget.addEventListener('notintersecting',"
+      - generic [ref=e98]: "({ detail }) =>"
+      - text: "{ delete detail.withEl.dataset.intersecting }) dragTarget.addEventListener('swap',"
+      - generic [ref=e99]: "({ detail }) =>"
+      - text: "{ delete detail.withEl.dataset.intersecting }) } const replaceDemo: HTMLElement | null = document.querySelector( '[data-replace-demo]' ) const appendDemo: HTMLElement | null = document.querySelector('[data-append-demo]') const replaceTemplate: HTMLTemplateElement | null = document.querySelector( '#replace-demo-template' ) const appendTemplate: HTMLTemplateElement | null = document.querySelector( '#append-demo-template' ) if (!replaceDemo || !appendDemo || !replaceTemplate || !appendTemplate) throw new Error() connect( replaceDemo, replaceTemplate,"
+      - generic [ref=e100]: (dragged, target) =>
+      - text: new DragTarget(dragged, target, 'replace') ) connect( appendDemo, appendTemplate,
+      - generic [ref=e101]: (dragged, target) =>
+      - text: new DragTarget(dragged, target, 'append') )

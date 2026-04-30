@@ -1,7 +1,7 @@
 import { DragArea, DragTarget } from './dist/index.js'
 
 const controlsArr: HTMLElement[] = Array.from(
-  document.querySelectorAll('div.controls')
+  document.querySelectorAll('[data-drag-area]')
 )
 
 const areaArr: DragArea[] = []
@@ -43,7 +43,6 @@ for (const controls of controlsArr) {
     }
   })
 }
-////////////////////////////////////////////////////////////////////////////////////
 const connect = (
   demo: HTMLElement,
   template: HTMLTemplateElement,
@@ -52,38 +51,85 @@ const connect = (
     targets: readonly HTMLElement[]
   ) => DragTarget
 ): void => {
-  const row: HTMLElement | null = demo.querySelector('.target-row')
+  const pair: HTMLElement | null = demo.querySelector('[data-target-pair]')
   const reset: HTMLButtonElement | null = demo.querySelector('[data-reset]')
-  if (!row || !reset) throw new Error()
+  if (!pair || !reset) throw new Error()
+
+  let dragTargets: DragTarget[] = []
 
   const fill = (): void => {
-    row.replaceChildren(template.content.cloneNode(true))
-    const dragged: HTMLElement | null = row.querySelector('[data-dragged]')
-    const targets = Array.from(row.querySelectorAll('[data-target]')).filter(
-      (element): element is HTMLElement => element instanceof HTMLElement
-    )
-    if (!dragged || targets.length === 0) throw new Error()
-    watchTarget(targetFor(dragged, targets))
+    pair.replaceChildren(template.content.cloneNode(true))
+    dragTargets = []
+    const rows = Array.from(pair.querySelectorAll('.target-row'))
+    for (const row of rows) {
+      const dragged: HTMLElement | null = row.querySelector('[data-dragged]')
+      const targets = Array.from(row.querySelectorAll('[data-target]')).filter(
+        (element): element is HTMLElement => element instanceof HTMLElement
+      )
+      if (!dragged || targets.length === 0) throw new Error()
+      dragged.id = `${demo.dataset.targetDemo}:dragged`
+      for (const [index, target] of targets.entries())
+        target.id = `${demo.dataset.targetDemo}:target:${index}`
+      void dragTargets.push(targetFor(dragged, targets))
+    }
+    for (const dragTarget of dragTargets) watchTarget(dragTarget, dragTargets)
   }
 
   reset.addEventListener('click', fill)
-  const dragged: HTMLElement | null = row.querySelector('[data-dragged]')
-  const targets = Array.from(row.querySelectorAll('[data-target]')).filter(
-    (element): element is HTMLElement => element instanceof HTMLElement
-  )
-  if (!dragged || targets.length === 0) throw new Error()
-  watchTarget(targetFor(dragged, targets))
+  fill()
 }
 
-const watchTarget = (dragTarget: DragTarget): void => {
+const watchTarget = (
+  dragTarget: DragTarget,
+  dragTargets: readonly DragTarget[]
+): void => {
   dragTarget.addEventListener('intersecting', ({ detail }) => {
     detail.withEl.dataset.intersecting = 'true'
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue
+      const withEl = otherTarget.getTargetById(detail.withEl.id)
+      if (withEl) withEl.dataset.intersecting = 'true'
+    }
   })
   dragTarget.addEventListener('notintersecting', ({ detail }) => {
     delete detail.withEl.dataset.intersecting
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue
+      const withEl = otherTarget.getTargetById(detail.withEl.id)
+      if (withEl) delete withEl.dataset.intersecting
+    }
+  })
+  dragTarget.addEventListener('drag', ({ detail }) => {
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue
+      if (otherTarget.dragged.id !== detail.thisEl.id) continue
+      void otherTarget.remoteDrag({
+        thisEl: otherTarget.dragged,
+        x: detail.x,
+        y: detail.y,
+      })
+    }
   })
   dragTarget.addEventListener('swap', ({ detail }) => {
     delete detail.withEl.dataset.intersecting
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue
+      if (otherTarget.dragged.id !== detail.thisEl.id) continue
+      const withEl = otherTarget.getTargetById(detail.withEl.id)
+      if (!withEl) continue
+      delete withEl.dataset.intersecting
+      void otherTarget.remoteSwap({ thisEl: otherTarget.dragged, withEl })
+    }
+  })
+  dragTarget.addEventListener('settle', ({ detail }) => {
+    for (const target of dragTarget.targets) delete target.dataset.intersecting
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue
+      if (otherTarget.dragged.id !== detail.thisEl.id) continue
+      for (const target of otherTarget.targets)
+        delete target.dataset.intersecting
+      void otherTarget.remoteSettle({ thisEl: otherTarget.dragged })
+    }
   })
 }
 
@@ -104,10 +150,10 @@ if (!replaceDemo || !appendDemo || !replaceTemplate || !appendTemplate)
 connect(
   replaceDemo,
   replaceTemplate,
-  (dragged, target) => new DragTarget(dragged, target, 'replace')
+  (dragged, targets) => new DragTarget(dragged, targets, 'replace')
 )
 connect(
   appendDemo,
   appendTemplate,
-  (dragged, target) => new DragTarget(dragged, target, 'append')
+  (dragged, targets) => new DragTarget(dragged, targets, 'append')
 )

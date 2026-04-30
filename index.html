@@ -4,7 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="color-scheme" content="dark" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sovereignbase dragonwatch library demo</title>
+    <title>Dragonwatch Drag And Watch Demo</title>
+    <meta
+      name="description"
+      content="Browser demo for @sovereignbase/dragonwatch, a TypeScript drag and watch library with DragArea and DragTarget event streams, remote replay, swap, append, and replace behavior."
+    />
+    <meta
+      name="keywords"
+      content="dragonwatch, drag and drop TypeScript, DragArea, DragTarget, drag events, remote drag replay, collaborative drag and drop, sovereignbase dragonwatch"
+    />
+    <meta name="author" content="Jori Lehtinen" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta name="application-name" content="dragonwatch" />
+    <link rel="canonical" href="https://sovereignbase.dev/dragonwatch/" />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://sovereignbase.dev/dragonwatch/"
+    />
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
     <link rel="dns-prefetch" href="//cdn.simpleicons.org" />
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
@@ -36,6 +58,200 @@
       rel="apple-touch-icon"
       href="https://sovereignbase.dev/sovereignbase_logo.png"
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Sovereignbase" />
+    <meta property="og:title" content="Sovereignbase Dragonwatch Demo" />
+    <meta
+      property="og:description"
+      content="Interactive browser demo for @sovereignbase/dragonwatch with DragArea, DragTarget, event streams, and remote drag replay."
+    />
+    <meta property="og:url" content="https://sovereignbase.dev/dragonwatch/" />
+    <meta
+      property="og:image"
+      content="https://sovereignbase.dev/sovereignbase_social_sharing_image.png"
+    />
+    <meta
+      property="og:image:secure_url"
+      content="https://sovereignbase.dev/sovereignbase_social_sharing_image.png"
+    />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Sovereignbase Dragonwatch drag and watch demo"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@sovereignbase" />
+    <meta name="twitter:title" content="Sovereignbase Dragonwatch Demo" />
+    <meta
+      name="twitter:description"
+      content="Interactive browser demo for @sovereignbase/dragonwatch with DragArea, DragTarget, event streams, and remote drag replay."
+    />
+    <meta
+      name="twitter:image"
+      content="https://sovereignbase.dev/sovereignbase_social_sharing_image.png"
+    />
+    <meta
+      name="twitter:image:alt"
+      content="Sovereignbase Dragonwatch drag and watch demo"
+    />
+    <meta name="twitter:creator" content="@jortsupetterson" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://sovereignbase.dev/dragonwatch/#organization",
+            "name": "Sovereignbase",
+            "url": "https://github.com/sovereignbase",
+            "alternateName": ["@sovereignbase"],
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://sovereignbase.dev/sovereignbase_logo.png",
+              "width": 320,
+              "height": 320
+            },
+            "sameAs": [
+              "https://github.com/sovereignbase",
+              "https://jsr.io/@sovereignbase",
+              "https://www.npmjs.com/org/sovereignbase"
+            ]
+          },
+          {
+            "@type": "Person",
+            "@id": "https://sovereignbase.dev/dragonwatch/#author",
+            "name": "Jori Lehtinen",
+            "url": "https://github.com/jortsupetterson",
+            "alternateName": ["jortsupetterson", "@jortsupetterson"],
+            "sameAs": [
+              "https://github.com/jortsupetterson",
+              "https://www.npmjs.com/~jortsupetterson",
+              "https://jsr.io/user/ab186a13-a64f-429e-a757-927aa4fa6e6c",
+              "https://linkedin.com/in/jortsupetterson",
+              "https://x.com/jortsupetterson",
+              "https://www.youtube.com/@jortsupetterson"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://sovereignbase.dev/dragonwatch/#website",
+            "url": "https://sovereignbase.dev/dragonwatch/",
+            "name": "Dragonwatch Drag And Watch Demo",
+            "description": "Browser demo for @sovereignbase/dragonwatch, a TypeScript drag and watch library with event streams and remote replay.",
+            "inLanguage": "en",
+            "publisher": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#organization"
+            }
+          },
+          {
+            "@type": "SoftwareSourceCode",
+            "@id": "https://sovereignbase.dev/dragonwatch/#software",
+            "name": "@sovereignbase/dragonwatch",
+            "alternateName": ["dragonwatch"],
+            "url": "https://sovereignbase.dev/dragonwatch/",
+            "description": "TypeScript drag and watch library for DragArea and DragTarget interactions, event streams, remote replay, swap, append, and replace behavior.",
+            "codeRepository": "https://github.com/sovereignbase/dragonwatch",
+            "license": "https://www.apache.org/licenses/LICENSE-2.0",
+            "programmingLanguage": ["TypeScript", "JavaScript"],
+            "runtimePlatform": ["Web Browser"],
+            "keywords": [
+              "drag and drop",
+              "TypeScript",
+              "DragArea",
+              "DragTarget",
+              "remote drag replay",
+              "collaborative drag and drop"
+            ],
+            "image": "https://sovereignbase.dev/sovereignbase_social_sharing_image.png",
+            "isAccessibleForFree": true,
+            "author": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#author"
+            },
+            "maintainer": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#organization"
+            },
+            "publisher": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#organization"
+            },
+            "sameAs": [
+              "https://jsr.io/@sovereignbase/dragonwatch",
+              "https://www.npmjs.com/package/@sovereignbase/dragonwatch"
+            ],
+            "subjectOf": [
+              "https://sovereignbase.dev/dragonwatch/spec/",
+              "https://sovereignbase.dev/dragonwatch/docs"
+            ]
+          },
+          {
+            "@type": "WebApplication",
+            "@id": "https://sovereignbase.dev/dragonwatch/#demo",
+            "name": "Dragonwatch Demo",
+            "url": "https://sovereignbase.dev/dragonwatch/",
+            "description": "Interactive browser demo for @sovereignbase/dragonwatch featuring DragArea, DragTarget, event streams, and remote drag replay.",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "Any",
+            "browserRequirements": "Requires a modern browser with Pointer Events support.",
+            "featureList": [
+              "DragArea swapping",
+              "DragTarget append and replace",
+              "Typed drag events",
+              "Remote drag replay"
+            ],
+            "isPartOf": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#website"
+            },
+            "about": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#software"
+            },
+            "author": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#author"
+            },
+            "publisher": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#organization"
+            }
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://sovereignbase.dev/dragonwatch/#webpage",
+            "url": "https://sovereignbase.dev/dragonwatch/",
+            "name": "Dragonwatch Drag And Watch Demo",
+            "description": "Interactive browser demo for @sovereignbase/dragonwatch with DragArea, DragTarget, event streams, and remote drag replay.",
+            "inLanguage": "en",
+            "isPartOf": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#website"
+            },
+            "mainEntity": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#demo"
+            },
+            "about": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#software"
+            },
+            "author": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#author"
+            },
+            "publisher": {
+              "@id": "https://sovereignbase.dev/dragonwatch/#organization"
+            },
+            "primaryImageOfPage": {
+              "@type": "ImageObject",
+              "url": "https://sovereignbase.dev/sovereignbase_social_sharing_image.png",
+              "width": 1200,
+              "height": 630
+            },
+            "relatedLink": [
+              "https://sovereignbase.dev/dragonwatch/spec/",
+              "https://sovereignbase.dev/dragonwatch/docs",
+              "https://github.com/sovereignbase/dragonwatch",
+              "https://jsr.io/@sovereignbase/dragonwatch",
+              "https://www.npmjs.com/package/@sovereignbase/dragonwatch"
+            ]
+          }
+        ]
+      }
+    </script>
     <style>
       :root {
         color-scheme: dark;
@@ -89,13 +305,31 @@
         line-height: 1.6;
       }
 
-      div.row {
-        display: flex;
-        justify-content: space-evenly;
-        align-items: center;
+      .control-card {
+        display: grid;
+        gap: 0.75rem;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.03);
       }
 
-      .controls {
+      .control-card h5,
+      .control-card p {
+        margin: 0;
+      }
+
+      .control-card p {
+        color: rgba(255, 255, 255, 0.76);
+        line-height: 1.5;
+      }
+
+      .area-demos {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .drag-grid {
         display: grid;
         grid-template-columns: repeat(3, 50px);
         justify-content: center;
@@ -103,7 +337,7 @@
         touch-action: none;
       }
 
-      .controls > div {
+      .drag-grid > div {
         display: grid;
         place-items: center;
         width: 50px;
@@ -117,37 +351,53 @@
         user-select: none;
       }
 
-      .controls > div[data-dragging='true'] {
+      .drag-grid > div[data-dragging='true'] {
         z-index: 1;
       }
 
-      .controls > div[data-dragging='true'],
-      .controls > div[data-no-transition='true'] {
+      .drag-grid > div[data-dragging='true'],
+      .drag-grid > div[data-no-transition='true'] {
         transition: none;
       }
 
       .target-demos {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1.5rem;
+        display: grid;
+        gap: 1rem;
       }
 
       .target-demo {
         display: grid;
-        gap: 0.75rem;
-        width: max-content;
+        gap: 0.6rem;
+        justify-items: center;
+        padding: 0.8rem;
+        text-align: center;
+      }
+
+      .target-pair {
+        display: grid;
+        gap: 0.55rem;
+        justify-items: center;
+        width: 100%;
+      }
+
+      .target-instance {
+        display: grid;
+        gap: 0.35rem;
+        justify-items: center;
+        width: 100%;
       }
 
       .target-row {
         display: grid;
-        grid-template-columns: repeat(3, 8.5rem);
-        gap: 0.75rem;
+        grid-template-columns: repeat(3, 6.75rem);
+        justify-content: center;
+        gap: 0.45rem;
+        width: 100%;
       }
 
       .target-slot {
-        width: 8.5rem;
-        height: 4.5rem;
+        width: 6.75rem;
+        height: 3.25rem;
       }
 
       .target-box {
@@ -159,6 +409,7 @@
         border: 1px solid #fff;
         background: #000;
         color: #fff;
+        font-size: 0.8rem;
         font-weight: 700;
         text-align: center;
         touch-action: none;
@@ -185,14 +436,9 @@
       }
 
       .target-demo button {
-        width: 100%;
+        max-width: 16rem;
         padding: 0.7rem 1rem;
-        border: 1px solid #fff;
-        border-radius: 0;
-        background: #000;
-        color: #fff;
-        font: inherit;
-        font-weight: 700;
+        width: 100%;
       }
 
       label {
@@ -300,6 +546,19 @@
         flex: 0 0 1rem;
       }
 
+      pre {
+        margin: 0;
+        overflow: auto;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      pre code.hljs {
+        padding: 1rem 1.125rem;
+        background: transparent;
+      }
+
       @media (min-width: 40rem) {
         main {
           padding: 2rem;
@@ -309,16 +568,12 @@
           padding: 1.75rem;
         }
 
-        .actions {
+        .area-demos {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
       }
 
       @media (max-width: 39.99rem) {
-        .target-demo {
-          width: 100%;
-        }
-
         .target-row {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -351,7 +606,10 @@
               class="spec-link"
               href="https://sovereignbase.dev/dragonwatch/docs"
             >
-              <img src="https://cdn.simpleicons.org/typedoc/white" alt="" />
+              <img
+                src="https://cdn.jsdelivr.net/gh/vscode-icons/vscode-icons@master/icons/file_type_typedoc.svg"
+                alt=""
+              />
               Docs</a
             >
           </div>
@@ -361,79 +619,103 @@
           All functionality uses two functions (drag and watch) where the name
           comes from :p. The library is also collaboration ready. Just try it!
         </p>
-        <div class="row">
-          <h5>DragArea 1</h5>
-          <div class="controls"></div>
-          <h5>DragArea 2</h5>
-          <div class="controls"></div>
+        <div class="area-demos">
+          <section class="control-card">
+            <h5>DragArea 1</h5>
+            <div class="drag-grid" data-drag-area></div>
+          </section>
+          <section class="control-card">
+            <h5>DragArea 2</h5>
+            <div class="drag-grid" data-drag-area></div>
+          </section>
         </div>
 
         <div class="target-demos">
-          <section class="target-demo" data-replace-demo>
+          <section
+            class="control-card target-demo"
+            data-replace-demo
+            data-target-demo="replace"
+          >
             <h5>DragTarget with replace mode</h5>
-            <div class="target-row">
-              <h5>DragTarget 1</h5>
-              <div class="target-slot">
-                <div class="target-box" data-dragged>dragged</div>
+            <div class="target-pair" data-target-pair>
+              <div class="target-instance">
+                <h5>DragTarget 1</h5>
+                <div class="target-row">
+                  <div class="target-slot">
+                    <div class="target-box" data-dragged>dragged</div>
+                  </div>
+                  <div class="target-slot">
+                    <div class="target-box" data-target>replace A</div>
+                  </div>
+                  <div class="target-slot">
+                    <div class="target-box" data-target>replace B</div>
+                  </div>
+                </div>
               </div>
-              <div class="target-slot">
-                <div class="target-box" data-target>replace A</div>
-              </div>
-              <div class="target-slot">
-                <div class="target-box" data-target>replace B</div>
-              </div>
-            </div>
-            <div class="target-row">
-              <h5>DragTarget 2</h5>
-              <div class="target-slot">
-                <div class="target-box" data-dragged>dragged</div>
-              </div>
-              <div class="target-slot">
-                <div class="target-box" data-target>replace A</div>
-              </div>
-              <div class="target-slot">
-                <div class="target-box" data-target>replace B</div>
+              <div class="target-instance">
+                <h5>DragTarget 2</h5>
+                <div class="target-row">
+                  <div class="target-slot">
+                    <div class="target-box" data-dragged>dragged</div>
+                  </div>
+                  <div class="target-slot">
+                    <div class="target-box" data-target>replace A</div>
+                  </div>
+                  <div class="target-slot">
+                    <div class="target-box" data-target>replace B</div>
+                  </div>
+                </div>
               </div>
             </div>
             <button type="button" data-reset>reset</button>
           </section>
 
-          <section class="target-demo" data-append-demo>
+          <section
+            class="control-card target-demo"
+            data-append-demo
+            data-target-demo="append"
+          >
             <h5>DragTarget with append mode</h5>
-            <div class="target-row">
-              <h5>DragTarget 1</h5>
-              <div class="target-slot">
-                <div class="target-box" data-dragged>dragged</div>
+            <div class="target-pair" data-target-pair>
+              <div class="target-instance">
+                <h5>DragTarget 1</h5>
+                <div class="target-row">
+                  <div class="target-slot">
+                    <div class="target-box" data-dragged>dragged</div>
+                  </div>
+                  <div class="target-slot">
+                    <div class="target-box" data-target>append A</div>
+                  </div>
+                  <div class="target-slot">
+                    <div class="target-box" data-target>append B</div>
+                  </div>
+                </div>
               </div>
-              <div class="target-slot">
-                <div class="target-box" data-target>append A</div>
-              </div>
-              <div class="target-slot">
-                <div class="target-box" data-target>append B</div>
-              </div>
-            </div>
-            <div class="target-row">
-              <h5>DragTarget 2</h5>
-              <div class="target-slot">
-                <div class="target-box" data-dragged>dragged</div>
-              </div>
-              <div class="target-slot">
-                <div class="target-box" data-target>append A</div>
-              </div>
-              <div class="target-slot">
-                <div class="target-box" data-target>append B</div>
+              <div class="target-instance">
+                <h5>DragTarget 2</h5>
+                <div class="target-row">
+                  <div class="target-slot">
+                    <div class="target-box" data-dragged>dragged</div>
+                  </div>
+                  <div class="target-slot">
+                    <div class="target-box" data-target>append A</div>
+                  </div>
+                  <div class="target-slot">
+                    <div class="target-box" data-target>append B</div>
+                  </div>
+                </div>
               </div>
             </div>
             <button type="button" data-reset>reset</button>
           </section>
         </div>
 
-        <h5>Powered by few lines of typescript</h5>
-        <pre>
-          <code class="language-typescript">import { DragArea, DragTarget } from './dist/index.js'
+        <div class="control-card">
+          <h5>Code</h5>
+          <pre><code class="language-typescript">import { DragArea, DragTarget } from '@sovereignbase/dragonwatch'
 
 const controlsArr: HTMLElement[] = Array.from(
-  document.querySelectorAll('div.controls')
+  document.querySelectorAll('[data-drag-area]')
 )
 
 const areaArr: DragArea[] = []
@@ -475,7 +757,6 @@ for (const controls of controlsArr) {
     }
   })
 }
-////////////////////////////////////////////////////////////////////////////////////
 const connect = (
   demo: HTMLElement,
   template: HTMLTemplateElement,
@@ -484,38 +765,85 @@ const connect = (
     targets: readonly HTMLElement[]
   ) => DragTarget
 ): void => {
-  const row: HTMLElement | null = demo.querySelector('.target-row')
+  const pair: HTMLElement | null = demo.querySelector('[data-target-pair]')
   const reset: HTMLButtonElement | null = demo.querySelector('[data-reset]')
-  if (!row || !reset) throw new Error()
+  if (!pair || !reset) throw new Error()
+
+  let dragTargets: DragTarget[] = []
 
   const fill = (): void => {
-    row.replaceChildren(template.content.cloneNode(true))
-    const dragged: HTMLElement | null = row.querySelector('[data-dragged]')
-    const targets = Array.from(row.querySelectorAll('[data-target]')).filter(
-      (element): element is HTMLElement => element instanceof HTMLElement
-    )
-    if (!dragged || targets.length === 0) throw new Error()
-    watchTarget(targetFor(dragged, targets))
+    pair.replaceChildren(template.content.cloneNode(true))
+    dragTargets = []
+    const rows = Array.from(pair.querySelectorAll('.target-row'))
+    for (const row of rows) {
+      const dragged: HTMLElement | null = row.querySelector('[data-dragged]')
+      const targets = Array.from(row.querySelectorAll('[data-target]')).filter(
+        (element): element is HTMLElement => element instanceof HTMLElement
+      )
+      if (!dragged || targets.length === 0) throw new Error()
+      dragged.id = `${demo.dataset.targetDemo}:dragged`
+      for (const [index, target] of targets.entries())
+        target.id = `${demo.dataset.targetDemo}:target:${index}`
+      void dragTargets.push(targetFor(dragged, targets))
+    }
+    for (const dragTarget of dragTargets) watchTarget(dragTarget, dragTargets)
   }
 
   reset.addEventListener('click', fill)
-  const dragged: HTMLElement | null = row.querySelector('[data-dragged]')
-  const targets = Array.from(row.querySelectorAll('[data-target]')).filter(
-    (element): element is HTMLElement => element instanceof HTMLElement
-  )
-  if (!dragged || targets.length === 0) throw new Error()
-  watchTarget(targetFor(dragged, targets))
+  fill()
 }
 
-const watchTarget = (dragTarget: DragTarget): void => {
+const watchTarget = (
+  dragTarget: DragTarget,
+  dragTargets: readonly DragTarget[]
+): void => {
   dragTarget.addEventListener('intersecting', ({ detail }) => {
     detail.withEl.dataset.intersecting = 'true'
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue
+      const withEl = otherTarget.getTargetById(detail.withEl.id)
+      if (withEl) withEl.dataset.intersecting = 'true'
+    }
   })
   dragTarget.addEventListener('notintersecting', ({ detail }) => {
     delete detail.withEl.dataset.intersecting
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue
+      const withEl = otherTarget.getTargetById(detail.withEl.id)
+      if (withEl) delete withEl.dataset.intersecting
+    }
+  })
+  dragTarget.addEventListener('drag', ({ detail }) => {
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue
+      if (otherTarget.dragged.id !== detail.thisEl.id) continue
+      void otherTarget.remoteDrag({
+        thisEl: otherTarget.dragged,
+        x: detail.x,
+        y: detail.y,
+      })
+    }
   })
   dragTarget.addEventListener('swap', ({ detail }) => {
     delete detail.withEl.dataset.intersecting
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue
+      if (otherTarget.dragged.id !== detail.thisEl.id) continue
+      const withEl = otherTarget.getTargetById(detail.withEl.id)
+      if (!withEl) continue
+      delete withEl.dataset.intersecting
+      void otherTarget.remoteSwap({ thisEl: otherTarget.dragged, withEl })
+    }
+  })
+  dragTarget.addEventListener('settle', ({ detail }) => {
+    for (const target of dragTarget.targets) delete target.dataset.intersecting
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue
+      if (otherTarget.dragged.id !== detail.thisEl.id) continue
+      for (const target of otherTarget.targets)
+        delete target.dataset.intersecting
+      void otherTarget.remoteSettle({ thisEl: otherTarget.dragged })
+    }
   })
 }
 
@@ -536,36 +864,74 @@ if (!replaceDemo || !appendDemo || !replaceTemplate || !appendTemplate)
 connect(
   replaceDemo,
   replaceTemplate,
-  (dragged, target) => new DragTarget(dragged, target, 'replace')
+  (dragged, targets) => new DragTarget(dragged, targets, 'replace')
 )
 connect(
   appendDemo,
   appendTemplate,
-  (dragged, target) => new DragTarget(dragged, target, 'append')
-)
-</code></pre>
+  (dragged, targets) => new DragTarget(dragged, targets, 'append')
+)</code></pre>
+        </div>
       </section>
     </main>
     <template id="replace-demo-template">
-      <div class="target-slot">
-        <div class="target-box" data-dragged>dragged</div>
+      <div class="target-instance">
+        <h5>DragTarget 1</h5>
+        <div class="target-row">
+          <div class="target-slot">
+            <div class="target-box" data-dragged>dragged</div>
+          </div>
+          <div class="target-slot">
+            <div class="target-box" data-target>replace A</div>
+          </div>
+          <div class="target-slot">
+            <div class="target-box" data-target>replace B</div>
+          </div>
+        </div>
       </div>
-      <div class="target-slot">
-        <div class="target-box" data-target>replace A</div>
-      </div>
-      <div class="target-slot">
-        <div class="target-box" data-target>replace B</div>
+      <div class="target-instance">
+        <h5>DragTarget 2</h5>
+        <div class="target-row">
+          <div class="target-slot">
+            <div class="target-box" data-dragged>dragged</div>
+          </div>
+          <div class="target-slot">
+            <div class="target-box" data-target>replace A</div>
+          </div>
+          <div class="target-slot">
+            <div class="target-box" data-target>replace B</div>
+          </div>
+        </div>
       </div>
     </template>
     <template id="append-demo-template">
-      <div class="target-slot">
-        <div class="target-box" data-dragged>dragged</div>
+      <div class="target-instance">
+        <h5>DragTarget 1</h5>
+        <div class="target-row">
+          <div class="target-slot">
+            <div class="target-box" data-dragged>dragged</div>
+          </div>
+          <div class="target-slot">
+            <div class="target-box" data-target>append A</div>
+          </div>
+          <div class="target-slot">
+            <div class="target-box" data-target>append B</div>
+          </div>
+        </div>
       </div>
-      <div class="target-slot">
-        <div class="target-box" data-target>append A</div>
-      </div>
-      <div class="target-slot">
-        <div class="target-box" data-target>append B</div>
+      <div class="target-instance">
+        <h5>DragTarget 2</h5>
+        <div class="target-row">
+          <div class="target-slot">
+            <div class="target-box" data-dragged>dragged</div>
+          </div>
+          <div class="target-slot">
+            <div class="target-box" data-target>append A</div>
+          </div>
+          <div class="target-slot">
+            <div class="target-box" data-target>append B</div>
+          </div>
+        </div>
       </div>
     </template>
     <script type="module" src="index.js"></script>

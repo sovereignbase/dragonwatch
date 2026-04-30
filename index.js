@@ -225,7 +225,7 @@ var DragArea = class {
   remoteDrag({ thisEl, x, y }) {
     for (const animation of thisEl.getAnimations()) animation.cancel();
     if (!this.restoredStyles.has(thisEl)) {
-      this.restoredStyles.set(thisEl, raiseDragged(thisEl));
+      void this.restoredStyles.set(thisEl, raiseDragged(thisEl));
       thisEl.style.transition = "none";
     }
     void moveDraggedToOffset(thisEl, x, y);
@@ -357,7 +357,7 @@ var DragTarget = class {
     if (this.used || thisEl !== this.dragged) return;
     for (const animation of thisEl.getAnimations()) animation.cancel();
     if (!this.restoredStyles.has(thisEl)) {
-      this.restoredStyles.set(thisEl, raiseDragged(thisEl));
+      void this.restoredStyles.set(thisEl, raiseDragged(thisEl));
       thisEl.style.transition = "none";
     }
     void moveDraggedToOffset(thisEl, x, y);
@@ -410,7 +410,7 @@ var DragTarget = class {
 
 // in-browser-testing-libs.ts
 var controlsArr = Array.from(
-  document.querySelectorAll("div.controls")
+  document.querySelectorAll("[data-drag-area]")
 );
 var areaArr = [];
 for (const controls of controlsArr) {
@@ -422,13 +422,13 @@ for (const controls of controlsArr) {
     void controls.appendChild(box);
   }
   const area = new DragArea(controls.children);
-  areaArr.push(area);
+  void areaArr.push(area);
   area.addEventListener("drag", ({ detail }) => {
     for (const otherArea of areaArr) {
       if (otherArea === area) continue;
       const thisEl = otherArea.getMemberById(detail.thisEl.id);
       if (!thisEl) continue;
-      otherArea.remoteDrag({ thisEl, x: detail.x, y: detail.y });
+      void otherArea.remoteDrag({ thisEl, x: detail.x, y: detail.y });
     }
   });
   area.addEventListener("swap", ({ detail }) => {
@@ -437,7 +437,7 @@ for (const controls of controlsArr) {
       const thisEl = otherArea.getMemberById(detail.thisEl.id);
       const withEl = otherArea.getMemberById(detail.withEl.id);
       if (!thisEl || !withEl) continue;
-      otherArea.remoteSwap({ thisEl, withEl });
+      void otherArea.remoteSwap({ thisEl, withEl });
     }
   });
   area.addEventListener("settle", ({ detail }) => {
@@ -445,40 +445,83 @@ for (const controls of controlsArr) {
       if (otherArea === area) continue;
       const thisEl = otherArea.getMemberById(detail.thisEl.id);
       if (!thisEl) continue;
-      otherArea.remoteSettle({ thisEl });
+      void otherArea.remoteSettle({ thisEl });
     }
   });
 }
 var connect = (demo, template, targetFor) => {
-  const row = demo.querySelector(".target-row");
+  const pair = demo.querySelector("[data-target-pair]");
   const reset = demo.querySelector("[data-reset]");
-  if (!row || !reset) throw new Error();
+  if (!pair || !reset) throw new Error();
+  let dragTargets = [];
   const fill = () => {
-    row.replaceChildren(template.content.cloneNode(true));
-    const dragged2 = row.querySelector("[data-dragged]");
-    const targets2 = Array.from(row.querySelectorAll("[data-target]")).filter(
-      (element) => element instanceof HTMLElement
-    );
-    if (!dragged2 || targets2.length === 0) throw new Error();
-    watchTarget(targetFor(dragged2, targets2));
+    pair.replaceChildren(template.content.cloneNode(true));
+    dragTargets = [];
+    const rows = Array.from(pair.querySelectorAll(".target-row"));
+    for (const row of rows) {
+      const dragged = row.querySelector("[data-dragged]");
+      const targets = Array.from(row.querySelectorAll("[data-target]")).filter(
+        (element) => element instanceof HTMLElement
+      );
+      if (!dragged || targets.length === 0) throw new Error();
+      dragged.id = `${demo.dataset.targetDemo}:dragged`;
+      for (const [index, target] of targets.entries())
+        target.id = `${demo.dataset.targetDemo}:target:${index}`;
+      void dragTargets.push(targetFor(dragged, targets));
+    }
+    for (const dragTarget of dragTargets) watchTarget(dragTarget, dragTargets);
   };
   reset.addEventListener("click", fill);
-  const dragged = row.querySelector("[data-dragged]");
-  const targets = Array.from(row.querySelectorAll("[data-target]")).filter(
-    (element) => element instanceof HTMLElement
-  );
-  if (!dragged || targets.length === 0) throw new Error();
-  watchTarget(targetFor(dragged, targets));
+  fill();
 };
-var watchTarget = (dragTarget) => {
+var watchTarget = (dragTarget, dragTargets) => {
   dragTarget.addEventListener("intersecting", ({ detail }) => {
     detail.withEl.dataset.intersecting = "true";
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue;
+      const withEl = otherTarget.getTargetById(detail.withEl.id);
+      if (withEl) withEl.dataset.intersecting = "true";
+    }
   });
   dragTarget.addEventListener("notintersecting", ({ detail }) => {
     delete detail.withEl.dataset.intersecting;
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue;
+      const withEl = otherTarget.getTargetById(detail.withEl.id);
+      if (withEl) delete withEl.dataset.intersecting;
+    }
+  });
+  dragTarget.addEventListener("drag", ({ detail }) => {
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue;
+      if (otherTarget.dragged.id !== detail.thisEl.id) continue;
+      void otherTarget.remoteDrag({
+        thisEl: otherTarget.dragged,
+        x: detail.x,
+        y: detail.y
+      });
+    }
   });
   dragTarget.addEventListener("swap", ({ detail }) => {
     delete detail.withEl.dataset.intersecting;
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue;
+      if (otherTarget.dragged.id !== detail.thisEl.id) continue;
+      const withEl = otherTarget.getTargetById(detail.withEl.id);
+      if (!withEl) continue;
+      delete withEl.dataset.intersecting;
+      void otherTarget.remoteSwap({ thisEl: otherTarget.dragged, withEl });
+    }
+  });
+  dragTarget.addEventListener("settle", ({ detail }) => {
+    for (const target of dragTarget.targets) delete target.dataset.intersecting;
+    for (const otherTarget of dragTargets) {
+      if (otherTarget === dragTarget) continue;
+      if (otherTarget.dragged.id !== detail.thisEl.id) continue;
+      for (const target of otherTarget.targets)
+        delete target.dataset.intersecting;
+      void otherTarget.remoteSettle({ thisEl: otherTarget.dragged });
+    }
   });
 };
 var replaceDemo = document.querySelector(
@@ -496,10 +539,10 @@ if (!replaceDemo || !appendDemo || !replaceTemplate || !appendTemplate)
 connect(
   replaceDemo,
   replaceTemplate,
-  (dragged, target) => new DragTarget(dragged, target, "replace")
+  (dragged, targets) => new DragTarget(dragged, targets, "replace")
 );
 connect(
   appendDemo,
   appendTemplate,
-  (dragged, target) => new DragTarget(dragged, target, "append")
+  (dragged, targets) => new DragTarget(dragged, targets, "append")
 );
