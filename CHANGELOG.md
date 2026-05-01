@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/sovereignbase/dragonwatch/compare/v1.0.1...v1.0.2) (2026-05-01)
+
+
+### Bug Fixes
+
+* trying to get ci to go trough. ([81161aa](https://github.com/sovereignbase/dragonwatch/commit/81161aaf626e63fbaa656a307a64ab9a19327873))
+
 ## [1.0.1](https://github.com/sovereignbase/dragonwatch/compare/v1.0.0...v1.0.1) (2026-05-01)
 
 
