@@ -2,7 +2,7 @@
   "type": "module",
   "license": "Apache-2.0",
   "name": "@sovereignbase/dragonwatch",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Small browser primitives for pointer-driven dragging and element watching.",
   "keywords": [
     "sovereignbase",
