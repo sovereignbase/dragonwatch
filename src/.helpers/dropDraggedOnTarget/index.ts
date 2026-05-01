@@ -2,6 +2,11 @@ import type { DropCommit, RestoredDragStyle } from '../../.types/types.js'
 import { raiseDragged } from '../raiseDragged/index.js'
 import { restoreDraggedStyle } from '../restoreDraggedStyle/index.js'
 
+function ignoreAnimationAbort(error: unknown): void {
+  if (error instanceof DOMException && error.name === 'AbortError') return
+  throw error
+}
+
 /**
  * Animates a dragged element to a target and commits the drop.
  *
@@ -32,13 +37,15 @@ export function dropDraggedOnTarget(
     { duration: animationDuration, easing: 'ease' }
   )
   dragged.style.transform = next
-  void animation.finished.finally(() => {
-    void commit()
-    delete dragged.dataset.x
-    delete dragged.dataset.y
-    void restoreDraggedStyle(dragged, {
-      ...nextRestoredStyle,
-      transform: '',
+  void animation.finished
+    .finally(() => {
+      void commit()
+      delete dragged.dataset.x
+      delete dragged.dataset.y
+      void restoreDraggedStyle(dragged, {
+        ...nextRestoredStyle,
+        transform: '',
+      })
     })
-  })
+    .catch(ignoreAnimationAbort)
 }

@@ -19,20 +19,27 @@
 <li>Side-effect free package entrypoint.</li>
 </ul>
 <h2 id="installation" class="tsd-anchor-link">Installation<a href="#installation" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<pre><code class="sh"><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">install</span><span class="hl-1"> </span><span class="hl-2">@sovereignbase/dragonwatch</span><br/><span class="hl-3"># or</span><br/><span class="hl-0">pnpm</span><span class="hl-1"> </span><span class="hl-2">add</span><span class="hl-1"> </span><span class="hl-2">@sovereignbase/dragonwatch</span><br/><span class="hl-3"># or</span><br/><span class="hl-0">yarn</span><span class="hl-1"> </span><span class="hl-2">add</span><span class="hl-1"> </span><span class="hl-2">@sovereignbase/dragonwatch</span>
+<pre><code class="sh"><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">install</span><span class="hl-1"> </span><span class="hl-2">@sovereignbase/dragonwatch</span><br/><span class="hl-3"># or</span><br/><span class="hl-0">pnpm</span><span class="hl-1"> </span><span class="hl-2">add</span><span class="hl-1"> </span><span class="hl-2">@sovereignbase/dragonwatch</span><br/><span class="hl-3"># or</span><br/><span class="hl-0">yarn</span><span class="hl-1"> </span><span class="hl-2">add</span><span class="hl-1"> </span><span class="hl-2">@sovereignbase/dragonwatch</span><br/><span class="hl-3"># or</span><br/><span class="hl-0">bun</span><span class="hl-1"> </span><span class="hl-2">add</span><span class="hl-1"> </span><span class="hl-2">@sovereignbase/dragonwatch</span><br/><span class="hl-3"># or</span><br/><span class="hl-0">deno</span><span class="hl-1"> </span><span class="hl-2">add</span><span class="hl-1"> </span><span class="hl-2">jsr:@sovereignbase/dragonwatch</span><br/><span class="hl-3"># or</span><br/><span class="hl-0">vlt</span><span class="hl-1"> </span><span class="hl-2">install</span><span class="hl-1"> </span><span class="hl-2">jsr:@sovereignbase/dragonwatch</span>
 </code><button type="button">Copy</button></pre>
 
 <h2 id="usage" class="tsd-anchor-link">Usage<a href="#usage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <h3 id="swapset" class="tsd-anchor-link">SwapSet<a href="#swapset" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">SwapSet</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@sovereignbase/dragonwatch&#39;</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">swapSet</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">SwapSet</span><span class="hl-1">(</span><span class="hl-5">document</span><span class="hl-1">.</span><span class="hl-0">querySelectorAll</span><span class="hl-1">(</span><span class="hl-2">&#39;[data-draggable]&#39;</span><span class="hl-1">))</span><br/><br/><span class="hl-5">swapSet</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;drag&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">thisEl</span><span class="hl-1">, </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">x</span><span class="hl-1">, </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">y</span><span class="hl-1">)</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-5">swapSet</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;swap&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">console</span><span class="hl-1">.</span><span class="hl-0">log</span><span class="hl-1">(</span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">thisEl</span><span class="hl-1">, </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">withEl</span><span class="hl-1">)</span><br/><span class="hl-1">})</span>
+<pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">SwapSet</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@sovereignbase/dragonwatch&#39;</span><br/><br/><span class="hl-3">// Makes all given elements draggable and swappable between each other preserving the original layout.</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">swapSet</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">SwapSet</span><span class="hl-1">(</span><span class="hl-5">document</span><span class="hl-1">.</span><span class="hl-0">querySelectorAll</span><span class="hl-1">(</span><span class="hl-2">&#39;[data-draggable]&#39;</span><span class="hl-1">))</span>
 </code><button type="button">Copy</button></pre>
 
 <h3 id="remote-swapset-replay" class="tsd-anchor-link">Remote SwapSet replay<a href="#remote-swapset-replay" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">SwapSet</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@sovereignbase/dragonwatch&#39;</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">localSet</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">SwapSet</span><span class="hl-1">(</span><span class="hl-5">localGrid</span><span class="hl-1">.</span><span class="hl-5">children</span><span class="hl-1">)</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">remoteSet</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">SwapSet</span><span class="hl-1">(</span><span class="hl-5">remoteGrid</span><span class="hl-1">.</span><span class="hl-5">children</span><span class="hl-1">)</span><br/><br/><span class="hl-5">localSet</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;drag&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">thisEl</span><span class="hl-1"> = </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">getMemberById</span><span class="hl-1">(</span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">thisEl</span><span class="hl-1">.</span><span class="hl-5">id</span><span class="hl-1">)</span><br/><span class="hl-1">  </span><span class="hl-4">if</span><span class="hl-1"> (</span><span class="hl-5">thisEl</span><span class="hl-1">) </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">remoteDrag</span><span class="hl-1">({ </span><span class="hl-5">thisEl</span><span class="hl-1">, </span><span class="hl-5">x:</span><span class="hl-1"> </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">x</span><span class="hl-1">, </span><span class="hl-5">y:</span><span class="hl-1"> </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">y</span><span class="hl-1"> })</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-5">localSet</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;swap&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">thisEl</span><span class="hl-1"> = </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">getMemberById</span><span class="hl-1">(</span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">thisEl</span><span class="hl-1">.</span><span class="hl-5">id</span><span class="hl-1">)</span><br/><span class="hl-1">  </span><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">withEl</span><span class="hl-1"> = </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">getMemberById</span><span class="hl-1">(</span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">withEl</span><span class="hl-1">.</span><span class="hl-5">id</span><span class="hl-1">)</span><br/><span class="hl-1">  </span><span class="hl-4">if</span><span class="hl-1"> (</span><span class="hl-5">thisEl</span><span class="hl-1"> &amp;&amp; </span><span class="hl-5">withEl</span><span class="hl-1">) </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">remoteSwap</span><span class="hl-1">({ </span><span class="hl-5">thisEl</span><span class="hl-1">, </span><span class="hl-5">withEl</span><span class="hl-1"> })</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-5">localSet</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;settle&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">thisEl</span><span class="hl-1"> = </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">getMemberById</span><span class="hl-1">(</span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">thisEl</span><span class="hl-1">.</span><span class="hl-5">id</span><span class="hl-1">)</span><br/><span class="hl-1">  </span><span class="hl-4">if</span><span class="hl-1"> (</span><span class="hl-5">thisEl</span><span class="hl-1">) </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">remoteSettle</span><span class="hl-1">({ </span><span class="hl-5">thisEl</span><span class="hl-1"> })</span><br/><span class="hl-1">})</span>
+<pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">SwapSet</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@sovereignbase/dragonwatch&#39;</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">localSet</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">SwapSet</span><span class="hl-1">(</span><span class="hl-5">localGrid</span><span class="hl-1">.</span><span class="hl-5">children</span><span class="hl-1">)</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">remoteSet</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">SwapSet</span><span class="hl-1">(</span><span class="hl-5">remoteGrid</span><span class="hl-1">.</span><span class="hl-5">children</span><span class="hl-1">)</span><br/><br/><span class="hl-3">// In practice you would only stream the id and coordinate data trough some transport.</span><br/><span class="hl-5">localSet</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;drag&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">thisEl</span><span class="hl-1"> = </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">getMemberById</span><span class="hl-1">(</span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">thisEl</span><span class="hl-1">.</span><span class="hl-5">id</span><span class="hl-1">)</span><br/><span class="hl-1">  </span><span class="hl-4">if</span><span class="hl-1"> (</span><span class="hl-5">thisEl</span><span class="hl-1">) </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">remoteDrag</span><span class="hl-1">({ </span><span class="hl-5">thisEl</span><span class="hl-1">, </span><span class="hl-5">x:</span><span class="hl-1"> </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">x</span><span class="hl-1">, </span><span class="hl-5">y:</span><span class="hl-1"> </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">y</span><span class="hl-1"> })</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-5">localSet</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;swap&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">thisEl</span><span class="hl-1"> = </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">getMemberById</span><span class="hl-1">(</span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">thisEl</span><span class="hl-1">.</span><span class="hl-5">id</span><span class="hl-1">)</span><br/><span class="hl-1">  </span><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">withEl</span><span class="hl-1"> = </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">getMemberById</span><span class="hl-1">(</span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">withEl</span><span class="hl-1">.</span><span class="hl-5">id</span><span class="hl-1">)</span><br/><span class="hl-1">  </span><span class="hl-4">if</span><span class="hl-1"> (</span><span class="hl-5">thisEl</span><span class="hl-1"> &amp;&amp; </span><span class="hl-5">withEl</span><span class="hl-1">) </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">remoteSwap</span><span class="hl-1">({ </span><span class="hl-5">thisEl</span><span class="hl-1">, </span><span class="hl-5">withEl</span><span class="hl-1"> })</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-5">localSet</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;settle&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">thisEl</span><span class="hl-1"> = </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">getMemberById</span><span class="hl-1">(</span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">thisEl</span><span class="hl-1">.</span><span class="hl-5">id</span><span class="hl-1">)</span><br/><span class="hl-1">  </span><span class="hl-4">if</span><span class="hl-1"> (</span><span class="hl-5">thisEl</span><span class="hl-1">) </span><span class="hl-5">remoteSet</span><span class="hl-1">.</span><span class="hl-0">remoteSettle</span><span class="hl-1">({ </span><span class="hl-5">thisEl</span><span class="hl-1"> })</span><br/><span class="hl-1">})</span>
 </code><button type="button">Copy</button></pre>
 
 <h3 id="dragtarget" class="tsd-anchor-link">DragTarget<a href="#dragtarget" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3>
-<pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">DragTarget</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@sovereignbase/dragonwatch&#39;</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">dragged</span><span class="hl-1"> = </span><span class="hl-5">document</span><span class="hl-1">.</span><span class="hl-0">querySelector</span><span class="hl-1">(</span><span class="hl-2">&#39;[data-dragged]&#39;</span><span class="hl-1">)</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">targets</span><span class="hl-1"> = </span><span class="hl-5">Array</span><span class="hl-1">.</span><span class="hl-0">from</span><span class="hl-1">(</span><span class="hl-5">document</span><span class="hl-1">.</span><span class="hl-0">querySelectorAll</span><span class="hl-1">(</span><span class="hl-2">&#39;[data-target]&#39;</span><span class="hl-1">)).</span><span class="hl-0">filter</span><span class="hl-1">(</span><br/><span class="hl-1">  (</span><span class="hl-5">element</span><span class="hl-1">): </span><span class="hl-5">element</span><span class="hl-1"> </span><span class="hl-6">is</span><span class="hl-1"> </span><span class="hl-8">HTMLElement</span><span class="hl-1"> </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-5">element</span><span class="hl-1"> </span><span class="hl-6">instanceof</span><span class="hl-1"> </span><span class="hl-8">HTMLElement</span><br/><span class="hl-1">)</span><br/><br/><span class="hl-4">if</span><span class="hl-1"> (!(</span><span class="hl-5">dragged</span><span class="hl-1"> </span><span class="hl-6">instanceof</span><span class="hl-1"> </span><span class="hl-8">HTMLElement</span><span class="hl-1">)) </span><span class="hl-4">throw</span><span class="hl-1"> </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">Error</span><span class="hl-1">(</span><span class="hl-2">&#39;missing dragged&#39;</span><span class="hl-1">)</span><br/><span class="hl-4">if</span><span class="hl-1"> (</span><span class="hl-5">targets</span><span class="hl-1">.</span><span class="hl-5">length</span><span class="hl-1"> === </span><span class="hl-9">0</span><span class="hl-1">) </span><span class="hl-4">throw</span><span class="hl-1"> </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">Error</span><span class="hl-1">(</span><span class="hl-2">&#39;missing targets&#39;</span><span class="hl-1">)</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">dragTarget</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">DragTarget</span><span class="hl-1">(</span><span class="hl-5">dragged</span><span class="hl-1">, </span><span class="hl-5">targets</span><span class="hl-1">, </span><span class="hl-2">&#39;replace&#39;</span><span class="hl-1">)</span><br/><br/><span class="hl-5">dragTarget</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;intersecting&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">withEl</span><span class="hl-1">.</span><span class="hl-5">dataset</span><span class="hl-1">.</span><span class="hl-5">intersecting</span><span class="hl-1"> = </span><span class="hl-2">&#39;true&#39;</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-5">dragTarget</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;notintersecting&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">delete</span><span class="hl-1"> </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">withEl</span><span class="hl-1">.</span><span class="hl-5">dataset</span><span class="hl-1">.</span><span class="hl-5">intersecting</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-5">dragTarget</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;swap&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-6">delete</span><span class="hl-1"> </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">withEl</span><span class="hl-1">.</span><span class="hl-5">dataset</span><span class="hl-1">.</span><span class="hl-5">intersecting</span><br/><span class="hl-1">})</span>
+<pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">DragTarget</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@sovereignbase/dragonwatch&#39;</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">dragged</span><span class="hl-1"> = </span><span class="hl-5">document</span><span class="hl-1">.</span><span class="hl-0">querySelector</span><span class="hl-1">(</span><span class="hl-2">&#39;[data-dragged]&#39;</span><span class="hl-1">)</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">targets</span><span class="hl-1"> = </span><span class="hl-5">Array</span><span class="hl-1">.</span><span class="hl-0">from</span><span class="hl-1">(</span><span class="hl-5">document</span><span class="hl-1">.</span><span class="hl-0">querySelectorAll</span><span class="hl-1">(</span><span class="hl-2">&#39;[data-target]&#39;</span><span class="hl-1">)).</span><span class="hl-0">filter</span><span class="hl-1">(</span><br/><span class="hl-1">  (</span><span class="hl-5">element</span><span class="hl-1">): </span><span class="hl-5">element</span><span class="hl-1"> </span><span class="hl-6">is</span><span class="hl-1"> </span><span class="hl-8">HTMLElement</span><span class="hl-1"> </span><span class="hl-6">=&gt;</span><span class="hl-1"> </span><span class="hl-5">element</span><span class="hl-1"> </span><span class="hl-6">instanceof</span><span class="hl-1"> </span><span class="hl-8">HTMLElement</span><br/><span class="hl-1">)</span><br/><br/><span class="hl-4">if</span><span class="hl-1"> (!(</span><span class="hl-5">dragged</span><span class="hl-1"> </span><span class="hl-6">instanceof</span><span class="hl-1"> </span><span class="hl-8">HTMLElement</span><span class="hl-1">)) </span><span class="hl-4">throw</span><span class="hl-1"> </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">Error</span><span class="hl-1">(</span><span class="hl-2">&#39;missing dragged&#39;</span><span class="hl-1">)</span><br/><span class="hl-4">if</span><span class="hl-1"> (</span><span class="hl-5">targets</span><span class="hl-1">.</span><span class="hl-5">length</span><span class="hl-1"> === </span><span class="hl-9">0</span><span class="hl-1">) </span><span class="hl-4">throw</span><span class="hl-1"> </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">Error</span><span class="hl-1">(</span><span class="hl-2">&#39;missing targets&#39;</span><span class="hl-1">)</span><br/><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">dragTarget</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">DragTarget</span><span class="hl-1">(</span><span class="hl-5">dragged</span><span class="hl-1">, </span><span class="hl-5">targets</span><span class="hl-1">, </span><span class="hl-2">&#39;replace&#39;</span><span class="hl-1">)</span><br/><br/><span class="hl-5">dragTarget</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;intersecting&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">withEl</span><span class="hl-1">.</span><span class="hl-5">style</span><span class="hl-1">.</span><span class="hl-5">border</span><span class="hl-1"> = </span><span class="hl-2">&#39;solid 1px green&#39;</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-5">dragTarget</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;notintersecting&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">withEl</span><span class="hl-1">.</span><span class="hl-5">style</span><span class="hl-1">.</span><span class="hl-5">border</span><span class="hl-1"> = </span><span class="hl-2">&#39;solid 1px white&#39;</span><br/><span class="hl-1">})</span><br/><br/><span class="hl-5">dragTarget</span><span class="hl-1">.</span><span class="hl-0">addEventListener</span><span class="hl-1">(</span><span class="hl-2">&#39;swap&#39;</span><span class="hl-1">, ({ </span><span class="hl-5">detail</span><span class="hl-1"> }) </span><span class="hl-6">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">detail</span><span class="hl-1">.</span><span class="hl-5">withEl</span><span class="hl-1">.</span><span class="hl-5">style</span><span class="hl-1">.</span><span class="hl-5">border</span><span class="hl-1"> = </span><span class="hl-2">&#39;solid 1px white&#39;</span><br/><span class="hl-1">})</span>
+</code><button type="button">Copy</button></pre>
+
+<h2 id="advanced-exports" class="tsd-anchor-link">Advanced Exports<a href="#advanced-exports" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p><code>DragTarget</code> and <code>SwapSet</code> are the main classes. The same package entrypoint
+also exports the lower-level <code>drag</code>, <code>startWatch</code>, and <code>stopWatch</code> functions,
+plus the public TypeScript types:</p>
+<pre><code class="ts"><span class="hl-4">import</span><span class="hl-1"> { </span><span class="hl-5">drag</span><span class="hl-1">, </span><span class="hl-5">startWatch</span><span class="hl-1">, </span><span class="hl-5">stopWatch</span><span class="hl-1"> } </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@sovereignbase/dragonwatch&#39;</span><br/><span class="hl-4">import</span><span class="hl-1"> </span><span class="hl-4">type</span><span class="hl-1"> {</span><br/><span class="hl-1">  </span><span class="hl-5">DragEventDetail</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">DragTargetEventMap</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">SettleEventDetail</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">SwapEventDetail</span><span class="hl-1">,</span><br/><span class="hl-1">  </span><span class="hl-5">SwapSetEventMap</span><span class="hl-1">,</span><br/><span class="hl-1">} </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;@sovereignbase/dragonwatch&#39;</span>
 </code><button type="button">Copy</button></pre>
 
 <h2 id="runtime-behavior" class="tsd-anchor-link">Runtime Behavior<a href="#runtime-behavior" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
@@ -56,12 +63,274 @@
 <li><code>swap</code></li>
 </ul>
 <h2 id="tests" class="tsd-anchor-link">Tests<a href="#tests" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
-<p>Suite: unit, integration, and E2E scripts under <code>test/</code>.
+<p>Suite: unit, integration, and Playwright browser E2E scripts under <code>test/</code>.
 Command: <code>npm run test</code>
 Coverage: c8 through <code>test/run-coverage.mjs</code>.</p>
+<p>Latest targeted local run on 2026-05-01:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>node test/run-coverage.mjs</code></td>
+<td>2 passed, 0 failed, 0 skipped</td>
+</tr>
+<tr>
+<td><code>node test/e2e/run.mjs</code></td>
+<td>45 passed, 0 failed, 0 skipped</td>
+</tr>
+</tbody>
+</table>
+<p>The browser E2E matrix covers Chromium, Firefox, WebKit, Mobile Chrome, and
+Mobile Safari projects. The E2E suite includes public export checks, pointer
+drag and intersection behavior, <code>SwapSet</code> swap and remote replay behavior,
+<code>DragTarget</code> replace and append behavior, outside-target settle behavior, and a
+console-clean click regression for non-drag clicks.</p>
 <h2 id="benchmarks" class="tsd-anchor-link">Benchmarks<a href="#benchmarks" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>Command: <code>npm run bench</code></p>
-<p>Results vary by machine.</p>
+<p>The benchmark suite runs in real browsers through Playwright and measures work
+inside the browser with the Performance API (<code>performance.mark</code>,
+<code>performance.measure</code>, and Long Task entries where supported).</p>
+<p>Latest targeted local run on 2026-05-01 with <code>node benchmark/bench.js</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Browser</th>
+<th>Benchmark</th>
+<th style="text-align:right">Runs</th>
+<th style="text-align:right">Operations</th>
+<th style="text-align:right">Median ms</th>
+<th style="text-align:right">P95 ms</th>
+<th style="text-align:right">Mean ms</th>
+<th style="text-align:right">Std dev ms</th>
+<th style="text-align:right">Ops/sec</th>
+<th style="text-align:right">Long tasks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>chromium</td>
+<td>SwapSet constructor, 400 members</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">10,000</td>
+<td style="text-align:right">5.800</td>
+<td style="text-align:right">8.800</td>
+<td style="text-align:right">6.744</td>
+<td style="text-align:right">3.349</td>
+<td style="text-align:right">59,312</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>chromium</td>
+<td>SwapSet remoteDrag replay, 5k moves</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">125,000</td>
+<td style="text-align:right">186.300</td>
+<td style="text-align:right">234.100</td>
+<td style="text-align:right">183.656</td>
+<td style="text-align:right">28.295</td>
+<td style="text-align:right">27,225</td>
+<td style="text-align:right">17</td>
+</tr>
+<tr>
+<td>chromium</td>
+<td>SwapSet remoteSwap replay, 250 swaps</td>
+<td style="text-align:right">20</td>
+<td style="text-align:right">5,000</td>
+<td style="text-align:right">210.900</td>
+<td style="text-align:right">365.600</td>
+<td style="text-align:right">224.190</td>
+<td style="text-align:right">68.303</td>
+<td style="text-align:right">1,115</td>
+<td style="text-align:right">16</td>
+</tr>
+<tr>
+<td>chromium</td>
+<td>DragTarget constructor, 250 targets</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">6,250</td>
+<td style="text-align:right">2.000</td>
+<td style="text-align:right">2.700</td>
+<td style="text-align:right">2.028</td>
+<td style="text-align:right">0.402</td>
+<td style="text-align:right">123,274</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>chromium</td>
+<td>DragTarget remoteDrag replay, 5k moves</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">125,000</td>
+<td style="text-align:right">100.300</td>
+<td style="text-align:right">111.200</td>
+<td style="text-align:right">99.428</td>
+<td style="text-align:right">9.240</td>
+<td style="text-align:right">50,288</td>
+<td style="text-align:right">22</td>
+</tr>
+<tr>
+<td>chromium</td>
+<td>watch dataset start/stop, 10k cycles</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">250,000</td>
+<td style="text-align:right">27.200</td>
+<td style="text-align:right">31.700</td>
+<td style="text-align:right">27.312</td>
+<td style="text-align:right">3.266</td>
+<td style="text-align:right">366,139</td>
+<td style="text-align:right">1</td>
+</tr>
+<tr>
+<td>firefox</td>
+<td>SwapSet constructor, 400 members</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">10,000</td>
+<td style="text-align:right">8.000</td>
+<td style="text-align:right">12.000</td>
+<td style="text-align:right">8.840</td>
+<td style="text-align:right">2.310</td>
+<td style="text-align:right">45,249</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>firefox</td>
+<td>SwapSet remoteDrag replay, 5k moves</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">125,000</td>
+<td style="text-align:right">190.000</td>
+<td style="text-align:right">322.000</td>
+<td style="text-align:right">210.920</td>
+<td style="text-align:right">44.686</td>
+<td style="text-align:right">23,706</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>firefox</td>
+<td>SwapSet remoteSwap replay, 250 swaps</td>
+<td style="text-align:right">20</td>
+<td style="text-align:right">5,000</td>
+<td style="text-align:right">95.000</td>
+<td style="text-align:right">122.000</td>
+<td style="text-align:right">100.100</td>
+<td style="text-align:right">11.891</td>
+<td style="text-align:right">2,498</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>firefox</td>
+<td>DragTarget constructor, 250 targets</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">6,250</td>
+<td style="text-align:right">3.000</td>
+<td style="text-align:right">4.000</td>
+<td style="text-align:right">3.320</td>
+<td style="text-align:right">0.614</td>
+<td style="text-align:right">75,301</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>firefox</td>
+<td>DragTarget remoteDrag replay, 5k moves</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">125,000</td>
+<td style="text-align:right">160.000</td>
+<td style="text-align:right">182.000</td>
+<td style="text-align:right">162.720</td>
+<td style="text-align:right">12.207</td>
+<td style="text-align:right">30,728</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>firefox</td>
+<td>watch dataset start/stop, 10k cycles</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">250,000</td>
+<td style="text-align:right">27.000</td>
+<td style="text-align:right">31.000</td>
+<td style="text-align:right">27.480</td>
+<td style="text-align:right">1.792</td>
+<td style="text-align:right">363,901</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>webkit</td>
+<td>SwapSet constructor, 400 members</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">10,000</td>
+<td style="text-align:right">8.000</td>
+<td style="text-align:right">10.000</td>
+<td style="text-align:right">8.200</td>
+<td style="text-align:right">1.265</td>
+<td style="text-align:right">48,780</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>webkit</td>
+<td>SwapSet remoteDrag replay, 5k moves</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">125,000</td>
+<td style="text-align:right">437.000</td>
+<td style="text-align:right">503.000</td>
+<td style="text-align:right">431.400</td>
+<td style="text-align:right">54.110</td>
+<td style="text-align:right">11,590</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>webkit</td>
+<td>SwapSet remoteSwap replay, 250 swaps</td>
+<td style="text-align:right">20</td>
+<td style="text-align:right">5,000</td>
+<td style="text-align:right">274.000</td>
+<td style="text-align:right">377.000</td>
+<td style="text-align:right">286.200</td>
+<td style="text-align:right">40.180</td>
+<td style="text-align:right">874</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>webkit</td>
+<td>DragTarget constructor, 250 targets</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">6,250</td>
+<td style="text-align:right">6.000</td>
+<td style="text-align:right">10.000</td>
+<td style="text-align:right">6.720</td>
+<td style="text-align:right">2.010</td>
+<td style="text-align:right">37,202</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>webkit</td>
+<td>DragTarget remoteDrag replay, 5k moves</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">125,000</td>
+<td style="text-align:right">270.000</td>
+<td style="text-align:right">298.000</td>
+<td style="text-align:right">272.000</td>
+<td style="text-align:right">17.767</td>
+<td style="text-align:right">18,382</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>webkit</td>
+<td>watch dataset start/stop, 10k cycles</td>
+<td style="text-align:right">25</td>
+<td style="text-align:right">250,000</td>
+<td style="text-align:right">30.000</td>
+<td style="text-align:right">34.000</td>
+<td style="text-align:right">29.520</td>
+<td style="text-align:right">3.623</td>
+<td style="text-align:right">338,753</td>
+<td style="text-align:right">0</td>
+</tr>
+</tbody>
+</table>
+<p>Results vary by hardware, browser version, thermal state, and background load.</p>
 <h2 id="license" class="tsd-anchor-link">License<a href="#license" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2>
 <p>Apache-2.0</p>
-</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#dragonwatch"><span>dragonwatch</span></a><ul><li><a href="#compatibility"><span>Compatibility</span></a></li><li><a href="#goals"><span>Goals</span></a></li><li><a href="#installation"><span>Installation</span></a></li><li><a href="#usage"><span>Usage</span></a></li><li><ul><li><a href="#swapset"><span>Swap<wbr/>Set</span></a></li><li><a href="#remote-swapset-replay"><span>Remote <wbr/>Swap<wbr/>Set replay</span></a></li><li><a href="#dragtarget"><span>Drag<wbr/>Target</span></a></li></ul></li><li><a href="#runtime-behavior"><span>Runtime <wbr/>Behavior</span></a></li><li><ul><li><a href="#browsers"><span>Browsers</span></a></li><li><a href="#remote-replay"><span>Remote <wbr/>Replay</span></a></li><li><a href="#events"><span>Events</span></a></li></ul></li><li><a href="#tests"><span>Tests</span></a></li><li><a href="#benchmarks"><span>Benchmarks</span></a></li><li><a href="#license"><span>License</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html">@sovereignbase/dragonwatch</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#dragonwatch"><span>dragonwatch</span></a><ul><li><a href="#compatibility"><span>Compatibility</span></a></li><li><a href="#goals"><span>Goals</span></a></li><li><a href="#installation"><span>Installation</span></a></li><li><a href="#usage"><span>Usage</span></a></li><li><ul><li><a href="#swapset"><span>Swap<wbr/>Set</span></a></li><li><a href="#remote-swapset-replay"><span>Remote <wbr/>Swap<wbr/>Set replay</span></a></li><li><a href="#dragtarget"><span>Drag<wbr/>Target</span></a></li></ul></li><li><a href="#advanced-exports"><span>Advanced <wbr/>Exports</span></a></li><li><a href="#runtime-behavior"><span>Runtime <wbr/>Behavior</span></a></li><li><ul><li><a href="#browsers"><span>Browsers</span></a></li><li><a href="#remote-replay"><span>Remote <wbr/>Replay</span></a></li><li><a href="#events"><span>Events</span></a></li></ul></li><li><a href="#tests"><span>Tests</span></a></li><li><a href="#benchmarks"><span>Benchmarks</span></a></li><li><a href="#license"><span>License</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html">@sovereignbase/dragonwatch</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>

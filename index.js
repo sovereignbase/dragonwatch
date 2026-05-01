@@ -17,6 +17,10 @@ function restoreDraggedStyle(dragged, restoredStyle) {
   dragged.style.transition = restoredStyle.transition;
   dragged.style.zIndex = restoredStyle.zIndex;
 }
+function ignoreAnimationAbort(error) {
+  if (error instanceof DOMException && error.name === "AbortError") return;
+  throw error;
+}
 function dropDraggedOnTarget(dragged, target, commit, animationDuration, restoredStyle) {
   const raisedStyle = raiseDragged(dragged);
   const nextRestoredStyle = restoredStyle ?? raisedStyle;
@@ -38,7 +42,7 @@ function dropDraggedOnTarget(dragged, target, commit, animationDuration, restore
       ...nextRestoredStyle,
       transform: ""
     });
-  });
+  }).catch(ignoreAnimationAbort);
 }
 function intersects(a, b) {
   const ar = a.getBoundingClientRect();
@@ -49,6 +53,10 @@ function moveDraggedToOffset(dragged, x, y) {
   dragged.dataset.x = String(x);
   dragged.dataset.y = String(y);
   dragged.style.transform = `translate(${x}px, ${y}px)`;
+}
+function ignoreAnimationAbort2(error) {
+  if (error instanceof DOMException && error.name === "AbortError") return;
+  throw error;
 }
 function returnDraggedToStart(dragged, animationDuration, restoredStyle) {
   const nextTransform = restoredStyle?.transform || "none";
@@ -68,7 +76,7 @@ function returnDraggedToStart(dragged, animationDuration, restoredStyle) {
       return;
     }
     void restoreDraggedStyle(dragged, restoredStyle);
-  });
+  }).catch(ignoreAnimationAbort2);
 }
 function swapDraggedWithWatcher(dragged, watcher, animationDuration) {
   const draggedRect = dragged.getBoundingClientRect();
