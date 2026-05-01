@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/sovereignbase/dragonwatch/compare/v1.0.0...v1.0.1) (2026-05-01)
+
+
+### Bug Fixes
+
+* coverage. ([cb1127d](https://github.com/sovereignbase/dragonwatch/commit/cb1127db3f97e587af47b0d9ce3e2234c53a8b21))
+
 ## 1.0.0 (2026-05-01)
 
 
